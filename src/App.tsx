@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import ReactPlayer from "react-player";
 // import * as path from 'path'
 // import {PythonShell} from "python-shell"
-import logo from './logo.svg'
 import './App.scss'
+import {IntervalWrapper, Interval} from "./components/IntervalWrapper"
+import {VideoCardWrapper} from "./components/VideoCardWrapper";
+import {Editor} from "./components/Editor";
 
 /*
 const path = window.require('path')
@@ -17,27 +18,10 @@ const PUBLIC_PATH = path.join(__dirname, process.env.PUBLIC_URL)
 const PYTHON_PATH = path.join(PUBLIC_PATH, 'venv/Scripts/python')
  */
 
-function VideoCard() {
-    return (
-        <div className="card">
-
-        </div>
-    )
-}
-
-function Interval(t1: string, t2: string) {
-    return (
-        <div className="interval">
-            <input type="text" className="t1" value={t1}/>
-            <span>to</span>
-            <input type="text" className="t2" value={t2}/>
-        </div>
-    )
-}
-
 
 function App() {
-    const [videoURL, setVideoURL] = useState(process.env.PUBLIC_URL + 'antifragile.mp4')
+    const [videoURL, setVideoURL] = useState(process.env.PUBLIC_URL + 'maze.mp4')
+    const [intervalList, setIntervalList] = useState<Interval[]>([])
 
     function handleDrop(event: any) {
         event.preventDefault()
@@ -84,28 +68,13 @@ function App() {
                     <h2>+</h2>
                     <p>Paste URL</p>
                 </button>
-                <div className="horizontal-scrolling-wrapper">
-                    <div className="card"><h2>Card1</h2></div>
-                    <div className="card"><h2>Card2</h2></div>
-                    <div className="card"><h2>Card3</h2></div>
-                    <div className="card"><h2>Card4</h2></div>
-                    <div className="card"><h2>Card5</h2></div>
-                    <div className="card"><h2>Card6</h2></div>
-                    <div className="card"><h2>Card7</h2></div>
-                    <div className="card"><h2>Card8</h2></div>
-                    <div className="card"><h2>Card9</h2></div>
-                </div>
+                <VideoCardWrapper/>
             </div>
             <hr/>
             <div className="main">
-                <div className="selector">
-                    <ReactPlayer url={videoURL} width="540px" height="300px" muted={true} controls={true} />
-                </div>
+                <Editor videoURL={videoURL} intervalList={intervalList} setIntervalList={setIntervalList}/>
                 <div className="vr"></div>
-                <div className="interval-wrapper">
-                    {Interval("0:00", "0:10")}
-                    {Interval("0:20", "0:30")}
-                </div>
+                <IntervalWrapper intervalList={intervalList} setIntervalList={setIntervalList}/>
             </div>
         </div>
     )

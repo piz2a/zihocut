@@ -17,6 +17,7 @@ var createWindow = function () {
         }
     });
     window.removeMenu();
+    window.setResizable(false);
     window.once('ready-to-show', function () {
         // @ts-ignore
         window.show();

@@ -29,15 +29,14 @@ button.customButton {
     -moz-appearance: none;
     appearance: none;
     border: none;
-    border-radius: 20px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     cursor: pointer;
     transition: 0.3s;
-    background: #ffb4b4;
+    background: #ff5e5e;
 }
 
 button.customButton:active, button.customButton:hover, button.customButton:focus {
-    background: #ff5e5e;
+    background: #ffb4b4;
     outline: 0;
 }
 
@@ -113,6 +112,7 @@ button.customButton:disabled {
         text-align: center;
         margin-right: 10px;
         color: black;
+        border-radius: 20px;
 
         h2 {
             display: flex;
@@ -138,7 +138,7 @@ button.customButton:disabled {
     display: flex;
     justify-content: space-around;
 
-    .selector {
+    .editor {
         .player-wrapper {
             width: auto; // Reset width
             height: auto; // Reset height
@@ -170,6 +170,13 @@ button.customButton:disabled {
                 margin-left: 10px;
                 margin-right: 10px;
             }
+            button.delete {
+                font-size: 20px;
+                width: 1.8em;
+                height: 1.8em;
+                border-radius: 0.3em;
+                margin-left: 0.6em;
+            }
         }
     }
 
@@ -177,6 +184,7 @@ button.customButton:disabled {
         overflow-x: hidden;
         overflow-y: scroll;
         white-space: nowrap;
+        list-style-type: none;
 
         .interval {
             display: inline-block;
@@ -196,6 +204,8 @@ button.customButton:disabled {
     }
 
     .interval-wrapper, .interval-wrapper-flexbox {
+        min-width: 250px;
+        max-width: 250px;
         min-height: 430px;
         max-height: 430px;
         -webkit-overflow-scrolling: touch;
