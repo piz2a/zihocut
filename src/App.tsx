@@ -1,81 +1,79 @@
 import React, {useEffect, useState} from 'react'
-// import * as path from 'path'
-// import {PythonShell} from "python-shell"
 import './App.scss'
 import {IntervalWrapper, Interval} from "./components/IntervalWrapper"
-import {VideoCardWrapper} from "./components/VideoCardWrapper";
-import {Editor} from "./components/Editor";
-
-/*
-const path = window.require('path')
-const url = window.require('url')
-const PythonShell = window.require('python-shell')
-const electron = window.require('electron');
-const {dialog} = electron.remote;
-/*
-
-const PUBLIC_PATH = path.join(__dirname, process.env.PUBLIC_URL)
-const PYTHON_PATH = path.join(PUBLIC_PATH, 'venv/Scripts/python')
- */
+import {VideoCardWrapper, Video} from "./components/VideoCardWrapper"
+import {Editor} from "./components/Editor"
 
 
 function App() {
-    const [videoURL, setVideoURL] = useState(process.env.PUBLIC_URL + 'maze.mp4')
+    const [videoList, setVideoList] = useState<Video[]>([{id: process.env.PUBLIC_URL + 'maze.mp4', downloadComplete: true}])
     const [intervalList, setIntervalList] = useState<Interval[]>([])
+    const [isPopup, setIsPopup] = useState(false);
+    const [currentDialog, setCurrentDialog] = useState(<></>)
 
-    function handleDrop(event: any) {
+    const addVideo = (URL: string) => {
+        setVideoList([...videoList, {id: URL, downloadComplete: false}])
+    }
+
+    const handleDrop = (event: any) => {
         event.preventDefault()
         const text = event.dataTransfer.getData('text')
         console.log(text)
-        setVideoURL(text)
-        /*
-        const video_id = url.parse(text, true)
-        console.log(video_id)
-
-        PythonShell.run('download.py', {
-            mode: 'text',
-            pythonPath: PYTHON_PATH,
-            pythonOptions: ['-u'], // get print results in real-time
-            scriptPath: PUBLIC_PATH,
-            args: ['value1', 'value2', 'value3'],
-        }).then((messages: string[]) => {
-            for (let message in messages) {
-                console.log(message)
-            }
-        })
-         */
+        addVideo(text)
     }
 
-    function handleDragOver(event: any) {
+    const handleDragOver = (event: any) => {
         event.preventDefault()
-        console.log(videoURL)
     }
 
-    function handleClick() {
-        const URL = prompt("Paste a YouTube video URL here:")
-        if (URL != null) setVideoURL(URL)
+    const handleClick = async () => {
+        setIsPopup(true)
+        setCurrentDialog(
+            <dialog open>
+                <button onClick={() => setIsPopup(false)} className="closeButton">X</button>
+                <label>Paste a YouTube video URL here:</label>
+                <input name="URL" id="urlPrompt" type="url"/>
+                <button onClick={() => {
+                    // @ts-ignore
+                    addVideo(document.getElementById('urlPrompt').value)
+                    setIsPopup(false)
+                }} className="downloadButton">Download</button>
+            </dialog>
+        )
     }
 
     useEffect(() => {
-        document.body.addEventListener("dragover", handleDragOver)
-        document.body.addEventListener("drop", handleDrop)
+        document.body.addEventListener('dragover', handleDragOver)
+        document.body.addEventListener('drop', handleDrop)
     }, [])
 
     return (
         <div className="App">
+            {isPopup ? <div className="fadeMe"></div> : <></>}
+            {isPopup ? currentDialog : <></>}
             <div className="header prevent-select">
                 <button onClick={handleClick} className="addCard customButton">
                     <h2>+</h2>
                     <p>Paste URL</p>
                 </button>
-                <VideoCardWrapper/>
+                <VideoCardWrapper videoList={videoList} setVideoList={setVideoList}/>
             </div>
             <hr/>
-            <div className="main">
-                <Editor videoURL={videoURL} intervalList={intervalList} setIntervalList={setIntervalList}/>
-                <div className="vr"></div>
-                <IntervalWrapper intervalList={intervalList} setIntervalList={setIntervalList}/>
-            </div>
+            {videoList.length !== 0 ?
+                <div className="main">
+                    <Editor videoList={videoList}
+                            setVideoList={setVideoList}
+                            intervalList={intervalList}
+                            setIntervalList={setIntervalList}/>
+                    <div className="vr"></div>
+                    <IntervalWrapper intervalList={intervalList} setIntervalList={setIntervalList}/>
+                </div> :
+                <div className="main">
+                    <h2 className="emptyVideoList">
+                        Drag-and-drop YouTube links here<br/>to start downloading and cropping videos
+                    </h2>
+                </div>
+            }
         </div>
     )
 }
