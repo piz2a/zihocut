@@ -24,4 +24,5 @@ yarn-error.log*
 /dist/
 
 /.idea
-/public/electron.js
+!/public/preload.js
+/public/*.js

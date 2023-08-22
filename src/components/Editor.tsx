@@ -1,20 +1,27 @@
 import ReactPlayer from "react-player"
 import React, {useRef, useState} from "react"
-import {Interval} from "./IntervalWrapper"
-import {Video} from "./VideoCardWrapper"
+import {setVideoProps, Video} from "../Interfaces";
+import Slider from "./Slider";
 
 function addInterval(
-    intervalList: Interval[],
-    setIntervalList: React.Dispatch<React.SetStateAction<Interval[]>>
+    videoIndex: number,
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
 ) {
-    setIntervalList([...intervalList, {from: Math.random().toString(), to: "1:00"}])
+    setVideoProps(
+        "intervals",
+        videoIndex,
+        [...videoList[videoIndex].intervals, {from: Math.random().toString(), to: "1:00"}],
+        videoList,
+        setVideoList
+    )
 }
 
 function Editor(props: {
     videoList: Video[],
-    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
-    intervalList: Interval[],
-    setIntervalList: React.Dispatch<React.SetStateAction<Interval[]>>
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number,
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
 }) {
     const [currentTime, setCurrentTime] = useState(0);
     const playerRef = useRef(null);
@@ -35,9 +42,10 @@ function Editor(props: {
                          muted={true}
                          controls={true}
                          onSeek={handleProgress}/>
-            <button onClick={() => addInterval(props.intervalList, props.setIntervalList)}>Add Interval</button>
+            <button onClick={() => addInterval(props.videoIndex, props.videoList, props.setVideoList)}>Add Interval</button>
             <button onClick={sendTest}>IPC Test</button>
             <button>{currentTime}</button>
+            <Slider/>
         </div>
     )
 }

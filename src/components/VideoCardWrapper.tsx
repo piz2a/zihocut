@@ -1,10 +1,6 @@
 import React from "react"
-import {Interval} from "./IntervalWrapper";
+import {Video} from "../Interfaces";
 
-interface Video {
-    id: string;
-    downloadComplete: boolean;
-}
 
 function removeVideo(
     index: number,
@@ -39,13 +35,16 @@ function VideoCard(
                     onClick={() => removeVideo(index, videoList, setVideoList)}>
                 X
             </button>
+            <p>{videoList.toString()}</p>
         </div>
     )
 }
 
 function VideoCardWrapper(props: {
     videoList: Video[],
-    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number,
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
 }) {
     const videoCards = props.videoList.map(
         (currentValue: Video, index: number) => VideoCard(
