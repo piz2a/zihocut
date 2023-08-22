@@ -1,22 +1,28 @@
 import React from "react"
+import {Interval, Video, setVideoProps} from "../Interfaces";
 
-interface Interval {
-    from: string
-    to: string
-}
 
 function removeInterval(
     index: number,
-    intervalList: Interval[],
-    setIntervalList: React.Dispatch<React.SetStateAction<Interval[]>>
+    videoIndex: number,
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
 ) {
-    setIntervalList([...intervalList.slice(0, index), ...intervalList.slice(index + 1)])
+    const video = videoList[videoIndex]
+    setVideoProps(
+        "intervals",
+        videoIndex,
+        [...video.intervals.slice(0, index), ...video.intervals.slice(index + 1)],
+        videoList,
+        setVideoList
+    )
 }
 
 function IntervalComponent(
     index: number, t1: string, t2: string,
-    intervalList: Interval[],
-    setIntervalList: React.Dispatch<React.SetStateAction<Interval[]>>
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number
 ) {
     return (
         <div className="interval">
@@ -24,7 +30,7 @@ function IntervalComponent(
             <span>~</span>
             <input type="text" className="t2" value={t2}/>
             <button className="delete customButton"
-                    onClick={() => removeInterval(index, intervalList, setIntervalList)}>
+                    onClick={() => removeInterval(index, videoIndex, videoList, setVideoList)}>
                 X
             </button>
         </div>
@@ -32,12 +38,13 @@ function IntervalComponent(
 }
 
 function IntervalWrapper(props: {
-    intervalList: Interval[],
-    setIntervalList: React.Dispatch<React.SetStateAction<Interval[]>>
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number
 }) {
-    const intervals = props.intervalList.map(
+    const intervals = props.videoList[props.videoIndex].intervals.map(
         (currentValue: Interval, index: number) => IntervalComponent(
-            index, currentValue.from, currentValue.to, props.intervalList, props.setIntervalList
+            index, currentValue.from, currentValue.to, props.videoList, props.setVideoList, props.videoIndex
         )
     )
     return (

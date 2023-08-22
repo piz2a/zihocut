@@ -1,0 +1,268 @@
+body {
+    background-color: #28282d;
+}
+
+.fadeMe {
+    opacity: 0.5;
+    background: #000;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    position: fixed;
+}
+
+dialog {
+    z-index: 10;
+    position: absolute;
+    vertical-align: middle;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 400px;
+
+    button#closeButton {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    button#downloadButton {
+        margin-right: 10px;
+        margin-left: auto;
+    }
+}
+
+hr {
+    width: 97%;
+    height: 1px;
+    background-color: white;
+    border: 0;
+}
+
+.vr {
+    border-left: 1px solid white;
+    height: 430px;
+}
+
+.prevent-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+button.customButton {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: 0.3s;
+    background: #ff5e5e;
+}
+
+button.customButton:active, button.customButton:hover, button.customButton:focus {
+    background: #ffb4b4;
+    outline: 0;
+}
+
+button.customButton:disabled {
+    opacity: 0.5;
+}
+
+// Scrollbar
+.horizontal-scrolling-wrapper, .horizontal-scrolling-wrapper-flexbox, .interval-wrapper, .interval-wrapper-flexbox {
+    &::-webkit-scrollbar {
+        width: 16px;
+        height: 16px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: #01314f;
+        border-radius: 10px;
+        background-clip: padding-box;
+        border: 2px solid transparent;
+    }
+    &::-webkit-scrollbar-track {
+        background-color: #444444;
+        border-radius: 10px;
+        box-shadow: inset 0 0 5px white;
+    }
+}
+
+.header {
+    padding: 10px 10px;
+    display: flex;
+
+    .horizontal-scrolling-wrapper {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        white-space: nowrap;
+        background-color: #1c1c1f;
+        border-radius: 16px;
+
+        .card {
+            display: inline-block;
+        }
+    }
+
+    .horizontal-scrolling-wrapper-flexbox {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+
+        .card {
+            flex: 0 0 auto;
+            margin-right: 3px;
+        }
+    }
+
+    .horizontal-scrolling-wrapper, .horizontal-scrolling-wrapper-flexbox {
+        height: 170px;
+        min-width: 600px;
+        max-width: 600px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .card {
+        border: 1px solid #ffffff;
+        border-radius: 16px;
+        margin-right: 5px;
+        width: 250px;
+        height: 150px;
+        background: #4f4f59;
+
+        .download {
+            progress::-webkit-progress-bar {
+                background:#f0f0f0;
+                border-radius:10px;
+                box-shadow: inset 3px 3px 10px #ccc;
+            }
+            progress::-webkit-progress-value {
+                border-radius:10px;
+                background: #1D976C;
+                background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);
+                background: linear-gradient(to right, #93F9B9, #1D976C);
+
+            }
+        }
+    }
+
+    .addCard {
+        cursor:pointer;
+        min-width: 150px;
+        max-width: 150px;
+        height: 150px;
+        text-align: center;
+        margin-right: 10px;
+        color: black;
+        border-radius: 20px;
+
+        h2 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+            margin-top: 0;
+            margin-bottom: 0;
+            color: white;
+        }
+
+        p {
+            margin-top: -10px;
+            font-family: "Arial Black", sans-serif;
+            font-size: 16px;
+        }
+    }
+}
+
+.main {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-around;
+
+    .editor {
+        .player-wrapper {
+            width: auto; // Reset width
+            height: auto; // Reset height
+        }
+
+        .react-player {
+            padding-top: 56.25%; // Percentage ratio for 16:9
+            position: relative; // Set to relative
+        }
+
+        .react-player > div {
+            position: absolute; // Scaling will occur since parent is relative now
+        }
+    }
+
+    .interval-wrapper {
+        display: flex;
+        flex-direction: column;
+        .interval {
+            padding: 10px;
+            input {
+                font-size: 20px;
+                width: 3em;
+                height: 1.5em;
+            }
+            span {
+                color: white;
+                font-size: 20px;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+            button.delete {
+                font-size: 20px;
+                width: 1.8em;
+                height: 1.8em;
+                border-radius: 0.3em;
+                margin-left: 0.6em;
+            }
+        }
+    }
+
+    .interval-wrapper {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        white-space: nowrap;
+        list-style-type: none;
+
+        .interval {
+            display: inline-block;
+        }
+    }
+
+    .interval-wrapper-flexbox {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+
+        .interval {
+            flex: 0 0 auto;
+            margin-bottom: 3px;
+        }
+    }
+
+    .interval-wrapper, .interval-wrapper-flexbox {
+        min-width: 250px;
+        max-width: 250px;
+        min-height: 430px;
+        max-height: 430px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    h2.emptyVideoList {
+        color: white;
+        text-align: center;
+        margin-top: 23%;
+    }
+}
