@@ -1,84 +1,41 @@
+import { App, BrowserWindow } from 'electron'
 import { spawn } from 'child_process'
-import * as url from 'url'
 import * as path from 'path'
+import * as fs from 'fs'
 
-let PYTHON_BASE_PATH: string;
+const VIDEO_DIRNAME = 'YouTubeCropDownloads'
 
-function getId(URL: string): string | null {
-    const parsed = url.parse(URL, true)
-    if (parsed.hostname !== 'youtube.com' || parsed.pathname !== '/watch' || !parsed.query.v)
-        return null
-    if (Array.isArray(parsed.query.v))
-        return parsed.query.v[0]
-    return parsed.query.v
-}
+export default class DownloadManager {
+    // private complete: { id: string, successful: boolean }[] = []
+    private PYTHON_BASE_PATH: string
+    private VIDEO_PATH: string
 
-class DownloadManager {
-    private queue: { id: string, task: any }[] = []
-    private complete: { id: string, successful: boolean }[] = []
-    private downloading = false
-    private taskProcessRunning = false
-
-    queueVideo(url: string): boolean {
-        const id = getId(url)
-        if (id === null) return false
-        const pythonTask = () => {
-            this.downloading = true
-            return spawn(
-                path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
-                [`"${path.join(PYTHON_BASE_PATH, 'download.py')}"`, `"${url}"`]
-            ).on('close', (code) => {
-                this.queue.forEach((pair) => {
-                    if (pair.id === url) {
-                        this.complete.push({id: id, successful: code !== 0})
-                    }
-                })
-                this.downloading = false
-            })
+    constructor(app: App) {
+        this.PYTHON_BASE_PATH = path.join(app.getAppPath(), 'extra', 'python')
+        this.VIDEO_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
+        if (!fs.existsSync(this.VIDEO_PATH)){
+            fs.mkdirSync(this.VIDEO_PATH);
         }
-        this.queue.push({id: id, task: pythonTask})
-        return true
     }
 
+    queueVideo(id: string, window: BrowserWindow | null) {
+        console.log(`Downloading video: ${id}`)
+        spawn(
+            path.join(this.PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
+            [path.join(this.PYTHON_BASE_PATH, 'download.py'), `https://www.youtube.com/watch?v=${id}`, this.VIDEO_PATH]
+        ).on('close', (code) => {
+            console.log(`ID: ${id}, Python script code: ${code}`)
+            if (window !== null) {
+                window.webContents.send('DOWNLOAD_COMPLETE', {id: id, complete: code === 0})
+            }
+        }).stderr.on('data', (data) => {
+            console.log(data.toString())
+        })
+    }
+
+    /*
     isComplete(id: string) {
         return this.complete.some((element) => element.id === id && element.successful)
     }
-
-    taskProcess() {
-        this.taskProcessRunning = true
-        while (this.taskProcessRunning) {
-            while (this.queue.length === 0) {console.log("waiting...")}
-            // @ts-ignore
-            this.queue.shift().task()
-            console.log("Download start!")
-            while (this.downloading) {console.log("Downloading...")}
-        }
-    }
-
-    stop() {
-        this.taskProcessRunning = false
-    }
+     */
 }
-
-const downloadManager = new DownloadManager()
-
-process.on('message', (m, args: string[]) => {
-    switch (m) {
-        case 'appPath':
-            PYTHON_BASE_PATH = path.join(args[0], 'extra', 'python')
-            break
-        case 'queueVideo':
-            // @ts-ignore
-            process.send('queueVideoReply', downloadManager.queueVideo(args[0]))
-            break
-        case 'isComplete':
-            // @ts-ignore
-            process.send('getIsCompleteReply', downloadManager.isComplete(args[0]))
-            break
-        case 'stop':
-            downloadManager.stop()
-            break
-    }
-})
-
-downloadManager.taskProcess()

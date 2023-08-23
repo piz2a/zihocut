@@ -1,19 +1,66 @@
-import React, {useEffect, useState} from 'react'
+import React, {JSX, useEffect, useState} from 'react'
 import './styles/App.scss'
 import {Video} from "./Interfaces"
 import {IntervalWrapper} from "./components/IntervalWrapper"
 import {VideoCardWrapper} from "./components/VideoCardWrapper"
 import {Editor} from "./components/Editor"
 
+export function setDialog(
+    setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
+    setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>,
+    dialogBody: JSX.Element
+) {
+    const DialogElement = () => {
+        useEffect(() => {
+            const input = document.getElementById("urlPrompt")
+            if (input === null) return
+            input.addEventListener("keypress", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault()
+                    const downloadButton = document.getElementById("enterButton")
+                    // @ts-ignore
+                    if (downloadButton !== null && input.value !== "") downloadButton.click()
+                }
+            })
+            input.focus()
+        }, [])
+        return (
+            <dialog open>
+                <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+                {dialogBody}
+            </dialog>
+        )
+    }
+    setIsPopup(true)
+    setCurrentDialog(<DialogElement/>)
+}
+
 
 function App() {
-    const [videoList, setVideoList] = useState<Video[]>([{id: process.env.PUBLIC_URL + 'maze.mp4', downloadComplete: true, intervals: []}])
+    const [videoList, setVideoList] = useState<Video[]>([{
+        id: process.env.PUBLIC_URL + 'maze.mp4',
+        downloadComplete: true,
+        intervals: []
+    }])
     const [videoIndex, setVideoIndex] = useState(0)
     const [isPopup, setIsPopup] = useState(false)
     const [currentDialog, setCurrentDialog] = useState(<></>)
+    const { ipcRenderer } = window.require('electron')
 
-    const addVideo = (URL: string) => {
-        setVideoList([...videoList, {id: URL, downloadComplete: false, intervals: []}])
+    const addVideo = async (URL: string) => {
+        const id = await ipcRenderer.invoke('GET_ID_FROM_URL', URL)
+        if (id === null) {
+            setDialog(setIsPopup, setCurrentDialog, (
+                <dialog open>
+                    <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+                    <label>Invalid URL: Try again.</label>
+                    <button onClick={() => setIsPopup(false)} id="enterButton">OK</button>
+                </dialog>
+            ))
+            return
+        }
+        await ipcRenderer.invoke('QUEUE_VIDEO', id)
+        setVideoList([...videoList, {id: id, downloadComplete: false, intervals: []}])
     }
 
     const handleDrop = (event: any) => {
@@ -27,21 +74,8 @@ function App() {
         event.preventDefault()
     }
 
-    const AddDialog = () => {
-        useEffect(() => {
-            const input = document.getElementById("urlPrompt")
-            if (input === null) return
-            input.addEventListener("keypress", (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault()
-                    const downloadButton = document.getElementById("downloadButton")
-                    // @ts-ignore
-                    if (downloadButton !== null && input.value !== "") downloadButton.click()
-                }
-            })
-            input.focus()
-        })
-        return (
+    const handleClick = async () => {
+        setDialog(setIsPopup, setCurrentDialog, (
             <dialog open>
                 <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
                 <label>Paste a YouTube video URL here:</label>
@@ -50,14 +84,9 @@ function App() {
                     // @ts-ignore
                     addVideo(document.getElementById('urlPrompt').value)
                     setIsPopup(false)
-                }} id="downloadButton">Download</button>
+                }} id="enterButton">Download</button>
             </dialog>
-        )
-    }
-
-    const handleClick = async () => {
-        setIsPopup(true)
-        setCurrentDialog(<AddDialog/>)
+        ))
     }
 
     useEffect(() => {
@@ -79,7 +108,7 @@ function App() {
                     <h2>+</h2>
                     <p>Paste URL</p>
                 </button>
-                <VideoCardWrapper videoList={videoList} setVideoList={setVideoList} videoIndex={videoIndex} setVideoIndex={setVideoIndex}/>
+                <VideoCardWrapper videoList={videoList} setVideoList={setVideoList} videoIndex={videoIndex} setVideoIndex={setVideoIndex} setIsPopup={setIsPopup} setCurrentDialog={setCurrentDialog}/>
             </div>
             <hr/>
             {videoList.length !== 0 ?
