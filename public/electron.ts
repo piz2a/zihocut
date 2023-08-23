@@ -1,12 +1,14 @@
-import { app, BrowserWindow, ipcMain, contextBridge } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
+import { fork } from 'child_process'
 import * as path from 'path'
 import * as isDev from 'electron-is-dev'
-import DownloadManager from "./downloadmanager";
 
 const BASE_URL = 'http://localhost:3000'
 
 let window: BrowserWindow | null
-const downloadManager = new DownloadManager()
+const downloaderChild = fork(path.join(__dirname, 'downloadmanager.js'))
+// @ts-ignore
+downloaderChild.send('appPath', [app.getAppPath()])
 
 const createWindow = () => {
     window = new BrowserWindow({
@@ -41,17 +43,40 @@ const createWindow = () => {
     })
 }
 
+const downloaderChildResponse: {queueVideo: boolean | null, isComplete: boolean | null} = {queueVideo: null, isComplete: null}
+
+downloaderChild.on('message', (m, result: boolean) => {
+    switch (m) {
+        case 'queueVideoReply':
+            downloaderChildResponse.queueVideo = result
+            break
+        case 'getIsCompleteReply':
+            downloaderChildResponse.isComplete = result
+            break
+    }
+})
+
 ipcMain.handle('SEND_MAIN_PING', async (event, arg) => {
     console.log(arg)
     return "hehe"
 })
 
 ipcMain.handle('QUEUE_VIDEO', (event, url: string) => {
-    return downloadManager.queueVideo(url)
+    // @ts-ignore
+    downloaderChild.send('queueVideo', [url])
+    while (downloaderChildResponse.queueVideo === null) {}
+    const result = downloaderChildResponse.queueVideo
+    downloaderChildResponse.queueVideo = null
+    return result
 })
 
 ipcMain.handle('GET_IS_COMPLETE', (event, id: string) => {
-    return downloadManager.isComplete(id)
+    // @ts-ignore
+    downloaderChild.send('isComplete', [id])
+    while (downloaderChildResponse.isComplete === null) {}
+    const result = downloaderChildResponse.isComplete
+    downloaderChildResponse.isComplete = null
+    return result
 })
 
 app.on('ready', () => {
@@ -62,11 +87,13 @@ app.on('ready', () => {
 })
 
 app.on('window-all-closed', () => {
-    downloadManager.stop()
+    // @ts-ignore
+    downloaderChild.send('stop', [])
+    downloaderChild.kill()
     if (process.platform !== 'darwin') app.quit()
 })
 
-contextBridge.exposeInMainWorld('performTaskProcess', downloadManager.taskProcess)
+// contextBridge.exposeInMainWorld('performTaskProcess', downloadManager.taskProcess)
 
 /*
 const path = window.require('path')

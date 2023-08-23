@@ -27,7 +27,7 @@ function Editor(props: {
     const playerRef = useRef(null);
     const { ipcRenderer } = window.require('electron')
     const sendTest = async () => {
-        console.log("haha" + await ipcRenderer.invoke('SEND_MAIN_PING', 'send'))
+        console.log("haha" + await ipcRenderer.invoke('QUEUE_VIDEO', 'https://www.youtube.com/watch?v=jNQXAC9IVRw'))
     }
     const handleProgress = (seconds: number) => {
         console.log(1)

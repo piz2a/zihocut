@@ -1,10 +1,8 @@
-import { app } from 'electron'
 import { spawn } from 'child_process'
-// import * as isDev from "electron-is-dev"
 import * as url from 'url'
 import * as path from 'path'
 
-const PYTHON_BASE_PATH = path.join(app.getAppPath(), 'extra', 'python')
+let PYTHON_BASE_PATH: string;
 
 function getId(URL: string): string | null {
     const parsed = url.parse(URL, true)
@@ -15,7 +13,7 @@ function getId(URL: string): string | null {
     return parsed.query.v
 }
 
-export default class DownloadManager {
+class DownloadManager {
     private queue: { id: string, task: any }[] = []
     private complete: { id: string, successful: boolean }[] = []
     private downloading = false
@@ -49,10 +47,11 @@ export default class DownloadManager {
     taskProcess() {
         this.taskProcessRunning = true
         while (this.taskProcessRunning) {
-            while (this.queue.length === 0) {}
+            while (this.queue.length === 0) {console.log("waiting...")}
             // @ts-ignore
             this.queue.shift().task()
-            while (this.downloading) {}
+            console.log("Download start!")
+            while (this.downloading) {console.log("Downloading...")}
         }
     }
 
@@ -60,3 +59,26 @@ export default class DownloadManager {
         this.taskProcessRunning = false
     }
 }
+
+const downloadManager = new DownloadManager()
+
+process.on('message', (m, args: string[]) => {
+    switch (m) {
+        case 'appPath':
+            PYTHON_BASE_PATH = path.join(args[0], 'extra', 'python')
+            break
+        case 'queueVideo':
+            // @ts-ignore
+            process.send('queueVideoReply', downloadManager.queueVideo(args[0]))
+            break
+        case 'isComplete':
+            // @ts-ignore
+            process.send('getIsCompleteReply', downloadManager.isComplete(args[0]))
+            break
+        case 'stop':
+            downloadManager.stop()
+            break
+    }
+})
+
+downloadManager.taskProcess()
