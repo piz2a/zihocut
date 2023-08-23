@@ -10,6 +10,9 @@ let window: BrowserWindow | null
 const downloadManager = new DownloadManager(app)
 
 function getId(URL: string): string | null {
+    if (!URL.startsWith('https://') && !URL.startsWith('http://')) {
+        URL = 'https://' + URL
+    }
     const parsed = url.parse(URL, true)
     if (parsed.hostname !== 'youtube.com' && parsed.hostname !== 'www.youtube.com')
         return null
