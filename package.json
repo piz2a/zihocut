@@ -42,16 +42,19 @@
     "mac": {
       "target": [
         "default"
-      ]
+      ],
+      "icon": "./build/icon.png"
     },
     "dmg": {
-      "title": "tournant"
+      "title": "tournant",
+      "icon": "./build/icon.png"
     },
     "win": {
       "target": [
         "zip",
         "nsis"
-      ]
+      ],
+      "icon": "./build/icon.png"
     },
     "linux": {
       "target": [
@@ -60,7 +63,8 @@
         "rpm",
         "zip",
         "tar.gz"
-      ]
+      ],
+      "icon": "./build/icon.png"
     },
     "nsis": {
       "oneClick": false,

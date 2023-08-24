@@ -39,7 +39,7 @@ const createWindow = () => {
     })
 
     window.removeMenu()
-    window.setResizable(false)
+    window.setResizable(isDev)
 
     window.once('ready-to-show', () => {
         // @ts-ignore

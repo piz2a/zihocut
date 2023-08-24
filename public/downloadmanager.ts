@@ -2,16 +2,16 @@ import { App, BrowserWindow } from 'electron'
 import { spawn } from 'child_process'
 import * as path from 'path'
 import * as fs from 'fs'
+import * as isDev from 'electron-is-dev'
 
 const VIDEO_DIRNAME = 'YouTubeCropDownloads'
 
 export default class DownloadManager {
-    // private complete: { id: string, successful: boolean }[] = []
-    private PYTHON_BASE_PATH: string
-    private VIDEO_PATH: string
+    private readonly PYTHON_BASE_PATH: string
+    private readonly VIDEO_PATH: string
 
     constructor(app: App) {
-        this.PYTHON_BASE_PATH = path.join(app.getAppPath(), 'extra', 'python')
+        this.PYTHON_BASE_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../extra/python')
         this.VIDEO_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
         if (!fs.existsSync(this.VIDEO_PATH)){
             fs.mkdirSync(this.VIDEO_PATH);
@@ -32,10 +32,4 @@ export default class DownloadManager {
             console.log(data.toString())
         })
     }
-
-    /*
-    isComplete(id: string) {
-        return this.complete.some((element) => element.id === id && element.successful)
-    }
-     */
 }
