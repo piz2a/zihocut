@@ -51,9 +51,7 @@ hr {
 }
 
 .prevent-select {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+    user-select: none;
 }
 
 button.customButton {
@@ -124,8 +122,8 @@ button.customButton:disabled {
 
     .horizontal-scrolling-wrapper, .horizontal-scrolling-wrapper-flexbox {
         height: 170px;
-        min-width: 600px;
-        max-width: 600px;
+        min-width: 620px;
+        max-width: 620px;
         -webkit-overflow-scrolling: touch;
     }
 

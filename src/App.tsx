@@ -1,9 +1,9 @@
 import React, {JSX, useEffect, useState} from 'react'
 import './styles/App.scss'
 import {Video} from "./Interfaces"
-import {IntervalWrapper} from "./components/IntervalWrapper"
-import {VideoCardWrapper} from "./components/VideoCardWrapper"
-import {Editor} from "./components/Editor"
+import IntervalWrapper from "./components/IntervalWrapper"
+import VideoCardWrapper from "./components/VideoCardWrapper"
+import Editor from "./components/Editor"
 
 export function setDialog(
     setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
@@ -36,13 +36,9 @@ export function setDialog(
 }
 
 
-function App() {
-    const [videoList, setVideoList] = useState<Video[]>([{
-        id: process.env.PUBLIC_URL + 'maze.mp4',
-        downloadComplete: true,
-        intervals: []
-    }])
-    const [videoIndex, setVideoIndex] = useState(0)
+export default function App() {
+    const [videoList, setVideoList] = useState<Video[]>([])
+    const [videoIndex, setVideoIndex] = useState(-1)
     const [isPopup, setIsPopup] = useState(false)
     const [currentDialog, setCurrentDialog] = useState(<></>)
     const { ipcRenderer } = window.require('electron')
@@ -96,29 +92,30 @@ function App() {
 
     return (
         <div className="App">
-            {isPopup ?
-                <>
-                    <div className="fadeMe"></div>
-                    {currentDialog}
-                </> :
-                <></>
-            }
+            { isPopup ? <><div className="fadeMe"></div>{currentDialog}</> : <></> }
             <div className="header prevent-select">
                 <button onClick={handleClick} className="addCard customButton">
                     <h2>+</h2>
                     <p>Paste URL</p>
                 </button>
-                <VideoCardWrapper videoList={videoList} setVideoList={setVideoList} videoIndex={videoIndex} setVideoIndex={setVideoIndex} setIsPopup={setIsPopup} setCurrentDialog={setCurrentDialog}/>
+                <VideoCardWrapper videoList={videoList}
+                                  setVideoList={setVideoList}
+                                  videoIndex={videoIndex}
+                                  setVideoIndex={setVideoIndex}
+                                  setIsPopup={setIsPopup}
+                                  setCurrentDialog={setCurrentDialog}/>
             </div>
             <hr/>
-            {videoList.length !== 0 ?
+            {videoList.length !== 0 && videoIndex !== -1 ?
                 <div className="main">
                     <Editor videoList={videoList}
                             setVideoList={setVideoList}
                             videoIndex={videoIndex}
                             setVideoIndex={setVideoIndex}/>
                     <div className="vr"></div>
-                    <IntervalWrapper videoList={videoList} setVideoList={setVideoList} videoIndex={videoIndex}/>
+                    <IntervalWrapper videoList={videoList}
+                                     setVideoList={setVideoList}
+                                     videoIndex={videoIndex}/>
                 </div> :
                 <div className="main">
                     <h2 className="emptyVideoList prevent-select">
@@ -129,5 +126,3 @@ function App() {
         </div>
     )
 }
-
-export default App

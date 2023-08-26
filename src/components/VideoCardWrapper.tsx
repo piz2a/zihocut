@@ -6,8 +6,10 @@ import {setDialog} from "../App";
 function removeVideo(
     index: number,
     videoList: Video[],
-    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
 ) {
+    if (index >= videoList.length - 1) setVideoIndex(-1)
     setVideoList([...videoList.slice(0, index), ...videoList.slice(index + 1)])
 }
 
@@ -18,13 +20,17 @@ function DownloadProgressBar() {
 }
 
 function DownloadCompleteBar() {
-    return <div className="download"></div>
+    return <div className="download">
+        Download Complete
+    </div>
 }
 
 function VideoCard(props: {
     index: number,
     videoList: Video[],
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number,
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>,
     setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
     setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
 }) {
@@ -35,6 +41,9 @@ function VideoCard(props: {
                 props.setVideoList(props.videoList.map((video) => {
                     if (video.id === message.id) {
                         video.downloadComplete = true
+                        if (props.videoIndex === -1) {
+                            props.setVideoIndex(0)
+                        }
                     }
                     return video
                 }))
@@ -57,15 +66,14 @@ function VideoCard(props: {
                     DownloadCompleteBar() : DownloadProgressBar()
             }
             <button className="delete customButton"
-                    onClick={() => removeVideo(props.index, props.videoList, props.setVideoList)}>
+                    onClick={() => removeVideo(props.index, props.videoList, props.setVideoList, props.setVideoIndex)}>
                 X
             </button>
-            <p>{props.videoList.toString()}</p>
         </div>
     )
 }
 
-function VideoCardWrapper(props: {
+export default function VideoCardWrapper(props: {
     videoList: Video[],
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
     videoIndex: number,
@@ -74,7 +82,13 @@ function VideoCardWrapper(props: {
     setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
 }) {
     const videoCards = props.videoList.map(
-        (currentValue: Video, index: number) => <VideoCard index={index} videoList={props.videoList} setVideoList={props.setVideoList} setIsPopup={props.setIsPopup} setCurrentDialog={props.setCurrentDialog}/>
+        (currentValue: Video, index: number) => <VideoCard index={index}
+                                                           videoList={props.videoList}
+                                                           setVideoList={props.setVideoList}
+                                                           videoIndex={props.videoIndex}
+                                                           setVideoIndex={props.setVideoIndex}
+                                                           setIsPopup={props.setIsPopup}
+                                                           setCurrentDialog={props.setCurrentDialog}/>
     )
     return (
         <div className="horizontal-scrolling-wrapper">
@@ -82,6 +96,3 @@ function VideoCardWrapper(props: {
         </div>
     )
 }
-
-export type {Video}
-export {VideoCardWrapper}

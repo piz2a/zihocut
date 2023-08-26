@@ -37,7 +37,7 @@ function IntervalComponent(
     )
 }
 
-function IntervalWrapper(props: {
+export default function IntervalWrapper(props: {
     videoList: Video[],
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
     videoIndex: number
@@ -53,6 +53,3 @@ function IntervalWrapper(props: {
         </div>
     )
 }
-
-export type {Interval}
-export {IntervalWrapper}

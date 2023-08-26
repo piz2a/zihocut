@@ -1,4 +1,4 @@
-# youtubecrop
-Drag-and-drop YouTube links and crop the videos instantly!
+# ZihoCut
+Drag-and-drop YouTube links and cut the videos instantly!
 
 Made with React & Electron.
