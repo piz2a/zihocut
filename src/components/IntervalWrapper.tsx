@@ -1,6 +1,30 @@
 import React from "react"
 import {Interval, Video, setVideoProps} from "../Interfaces";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPencil, faX} from "@fortawesome/free-solid-svg-icons";
+import {logStep} from "./Slider";
 
+
+export function minAndSec(time: number) {
+    return `${Math.floor(time / 60)}:${(time % 60).toFixed(-logStep)}`
+}
+
+function editInterval(
+    index: number,
+    videoIndex: number,
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
+) {
+    if (videoList[videoIndex].currentInterval === -2) {
+        setVideoProps(
+            "currentInterval",
+            videoIndex,
+            index,
+            videoList,
+            setVideoList
+        )
+    }
+}
 
 function removeInterval(
     index: number,
@@ -19,19 +43,23 @@ function removeInterval(
 }
 
 function IntervalComponent(
-    index: number, t1: string, t2: string,
+    index: number, t1: number, t2: number,
     videoList: Video[],
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
     videoIndex: number
 ) {
     return (
         <div className="interval">
-            <input type="text" className="t1" value={t1}/>
-            <span>~</span>
-            <input type="text" className="t2" value={t2}/>
+            <span className="t1">{minAndSec(t1)}</span>
+            <span className="to">~</span>
+            <span className="t2">{minAndSec(t2)}</span>
+            <button className={`edit customButton ${videoList[videoIndex].currentInterval === -2 ? 'enabledButton' : ''}`}
+                    onClick={() => editInterval(index, videoIndex, videoList, setVideoList)}>
+                <FontAwesomeIcon icon={faPencil} />
+            </button>
             <button className="delete customButton"
                     onClick={() => removeInterval(index, videoIndex, videoList, setVideoList)}>
-                X
+                <FontAwesomeIcon icon={faX} />
             </button>
         </div>
     )
@@ -49,7 +77,12 @@ export default function IntervalWrapper(props: {
     )
     return (
         <div className="interval-wrapper">
-            {intervals}
+            {intervals.length !== 0 ?
+                intervals :
+                <div className="noInterval">
+                    <h3>Add Intervals Below</h3>
+                </div>
+            }
         </div>
     )
 }

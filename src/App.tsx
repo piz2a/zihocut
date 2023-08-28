@@ -1,9 +1,8 @@
 import React, {JSX, useEffect, useState} from 'react'
 import './styles/App.scss'
-import {Video} from "./Interfaces"
-import IntervalWrapper from "./components/IntervalWrapper"
+import {Video, videoStatus} from "./Interfaces"
 import VideoCardWrapper from "./components/VideoCardWrapper"
-import Editor from "./components/Editor"
+import Editor, {NEW_INTERVAL} from "./components/Editor"
 
 export function setDialog(
     setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
@@ -56,14 +55,15 @@ export default function App() {
             return
         }
         await ipcRenderer.invoke('QUEUE_VIDEO', id)
-        setVideoList([...videoList, {id: id, downloadComplete: false, intervals: []}])
+        console.log(videoList)
+        setVideoList([...videoList, {id: id, status: videoStatus.DOWNLOADING, intervals: [], currentInterval: NEW_INTERVAL}])
     }
 
-    const handleDrop = (event: any) => {
+    const handleDrop = async (event: any) => {
         event.preventDefault()
         const text = event.dataTransfer.getData('text')
         console.log(text)
-        addVideo(text)
+        await addVideo(text)
     }
 
     const handleDragOver = (event: any) => {
@@ -107,19 +107,15 @@ export default function App() {
             </div>
             <hr/>
             {videoList.length !== 0 && videoIndex !== -1 ?
-                <div className="main">
-                    <Editor videoList={videoList}
-                            setVideoList={setVideoList}
-                            videoIndex={videoIndex}
-                            setVideoIndex={setVideoIndex}/>
-                    <div className="vr"></div>
-                    <IntervalWrapper videoList={videoList}
-                                     setVideoList={setVideoList}
-                                     videoIndex={videoIndex}/>
-                </div> :
+                <Editor videoList={videoList}
+                        setVideoList={setVideoList}
+                        videoIndex={videoIndex}
+                        setVideoIndex={setVideoIndex}
+                        setIsPopup={setIsPopup}
+                        setCurrentDialog={setCurrentDialog}/> :
                 <div className="main">
                     <h2 className="emptyVideoList prevent-select">
-                        Drag-and-drop YouTube links here<br/>to start downloading and cropping videos
+                        Drag-and-drop YouTube links here<br/>to download and cut videos
                     </h2>
                 </div>
             }

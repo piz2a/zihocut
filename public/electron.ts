@@ -10,7 +10,6 @@ const BASE_URL = 'http://localhost:3000'
 
 let window: BrowserWindow | null
 
-// const DOWNLOAD_PROTOCOL = 'download'
 const VIDEO_DIRNAME = 'ZihoCut'
 const PYTHON_BASE_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../extra/python')
 const VIDEO_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
@@ -35,15 +34,6 @@ function getId(URL: string): string | null {
     return null
 }
 
-/*
-function fileHandler(req: Request) {
-    const id = req.url.slice(`${DOWNLOAD_PROTOCOL}://`.length)
-    const fileURL = url.pathToFileURL(path.join(VIDEO_PATH, `${id}.mp4`)).toString()
-    console.log(fileURL)
-    return net.fetch(fileURL)
-}
-*/
-
 function createWindow() {
     window = new BrowserWindow({
         width: 800,
@@ -58,7 +48,6 @@ function createWindow() {
         },
     })
 
-    window.removeMenu()
     window.setResizable(isDev)
 
     window.once('ready-to-show', () => {
@@ -101,9 +90,13 @@ ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
         console.log(data.toString())
     })
 })
+ipcMain.handle('EXPORT_VIDEO', (event, intervals: number[][]) => {
+    intervals.forEach((interval) => {
+        console.log(interval[0], interval[1])
+    })
+})
 
 app.on('ready', () => {
-    // protocol.handle(DOWNLOAD_PROTOCOL, fileHandler)
     createWindow()
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()

@@ -47,7 +47,7 @@ hr {
 
 .vr {
     border-left: 1px solid white;
-    height: 430px;
+    height: 300px;
 }
 
 .prevent-select {
@@ -65,7 +65,7 @@ button.customButton {
     background: #ff5e5e;
 }
 
-button.customButton:active, button.customButton:hover, button.customButton:focus {
+button.customButton:hover {
     background: #ffb4b4;
     outline: 0;
 }
@@ -206,23 +206,36 @@ button.customButton:disabled {
         flex-direction: column;
         .interval {
             padding: 10px;
-            input {
-                font-size: 20px;
-                width: 3em;
+            .t1, .t2 {
+                color: white;
+                font-size: 14px;
+                min-width: 3em;
+                max-width: 3em;
                 height: 1.5em;
             }
-            span {
+            .to {
                 color: white;
-                font-size: 20px;
+                font-size: 14px;
                 margin-left: 10px;
                 margin-right: 10px;
             }
-            button.delete {
+            button.delete, button.edit {
                 font-size: 20px;
                 width: 1.8em;
                 height: 1.8em;
                 border-radius: 0.3em;
                 margin-left: 0.6em;
+            }
+            button.edit {
+                background: #4f4f59;
+                cursor: default;
+            }
+            button.enabledButton {
+                background: #2b89ff;
+                cursor: pointer;
+                &:hover {
+                    background: #6daeff;
+                }
             }
         }
     }
@@ -253,8 +266,8 @@ button.customButton:disabled {
     .interval-wrapper, .interval-wrapper-flexbox {
         min-width: 250px;
         max-width: 250px;
-        min-height: 430px;
-        max-height: 430px;
+        min-height: 300px;
+        max-height: 300px;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -263,4 +276,8 @@ button.customButton:disabled {
         text-align: center;
         margin-top: 23%;
     }
+}
+
+.footer {
+    padding: 0 14px;
 }

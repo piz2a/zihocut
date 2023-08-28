@@ -1,14 +1,15 @@
 import React from "react"
 
 export interface Interval {
-    from: string
-    to: string
+    from: number
+    to: number
 }
 
 export interface Video {
     id: string
-    downloadComplete: boolean
+    status: number
     intervals: Interval[]
+    currentInterval: number
 }
 
 export function setVideo(
@@ -31,4 +32,12 @@ export function setVideoProps(
     // @ts-ignore
     video[propName] = value
     setVideo(videoIndex, video, videoList, setVideoList)
+}
+
+export const videoStatus = {
+    DOWNLOADING: 0,
+    DOWNLOAD_COMPLETE: 1,
+    EXPORTING: 2,
+    EXPORT_COMPLETE: 3,
+    EXPORT_FAILED: 4
 }

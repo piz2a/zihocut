@@ -1,5 +1,5 @@
 import React, {JSX, useEffect} from "react"
-import {Video} from "../Interfaces";
+import {setVideoProps, Video, videoStatus} from "../Interfaces";
 import {setDialog} from "../App";
 
 
@@ -9,20 +9,55 @@ function removeVideo(
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
     setVideoIndex: React.Dispatch<React.SetStateAction<number>>
 ) {
-    if (index >= videoList.length - 1) setVideoIndex(-1)
+    if (videoList[index].status === videoStatus.EXPORTING)
+        return
+    if (index >= videoList.length - 1)
+        setVideoIndex(-1)
     setVideoList([...videoList.slice(0, index), ...videoList.slice(index + 1)])
 }
 
-function DownloadProgressBar() {
-    return <div className="download">
-        <progress value={50} max={100}></progress>
-    </div>
+function DownloadProgress() {
+    return (
+        <>
+            <progress value={50} max={100}></progress>
+        </>
+    )
 }
 
-function DownloadCompleteBar() {
-    return <div className="download">
-        Download Complete
-    </div>
+function DownloadComplete(props: {
+    index: number,
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
+}) {
+    return (
+        <>
+            <p>Download Complete</p>
+            <button onClick={() => props.setVideoIndex(props.index)}>Select</button>
+        </>
+    )
+}
+
+function ExportProgress() {
+    return (
+        <>
+            <p>Exporting</p>
+        </>
+    )
+}
+
+function ExportComplete() {
+    return (
+        <>
+            <p>Export Complete</p>
+        </>
+    )
+}
+
+function ExportFailed() {
+    return (
+        <>
+            <p>Export Failed</p>
+        </>
+    )
 }
 
 function VideoCard(props: {
@@ -35,18 +70,15 @@ function VideoCard(props: {
     setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
 }) {
     const { ipcRenderer } = window.require('electron')
+
     useEffect(() => {
         ipcRenderer.on('DOWNLOAD_COMPLETE', (event: any, message: {id: string, complete: boolean}) => {
             if (message.complete) {
-                props.setVideoList(props.videoList.map((video) => {
-                    if (video.id === message.id) {
-                        video.downloadComplete = true
-                        if (props.videoIndex === -1) {
-                            props.setVideoIndex(0)
-                        }
-                    }
-                    return video
-                }))
+                if (message.id === props.videoList[props.index].id)
+                    setVideoProps("status", props.index, videoStatus.DOWNLOAD_COMPLETE, props.videoList, props.setVideoList)
+                if (props.videoIndex === -1) {
+                    props.setVideoIndex(0)
+                }
             } else {
                 setDialog(props.setIsPopup, props.setCurrentDialog, (
                     <dialog open>
@@ -58,14 +90,27 @@ function VideoCard(props: {
             }
         })
     }, [])
+
     return (
         <div className="card">
             <p className="title">{props.videoList[props.index].id}</p>
-            {
-                props.videoList[props.index].downloadComplete ?
-                    DownloadCompleteBar() : DownloadProgressBar()
-            }
-            <button className="delete customButton"
+            <div className="download">
+                {(() => {
+                    switch(props.videoList[props.index].status) {
+                        case videoStatus.DOWNLOADING:
+                            return <DownloadProgress/>
+                        case videoStatus.DOWNLOAD_COMPLETE:
+                            return <DownloadComplete index={props.index} setVideoIndex={props.setVideoIndex}/>
+                        case videoStatus.EXPORTING:
+                            return <ExportProgress/>
+                        case videoStatus.EXPORT_COMPLETE:
+                            return <ExportComplete/>
+                        case videoStatus.EXPORT_FAILED:
+                            return <ExportFailed/>
+                    }
+                })()}
+            </div>
+            <button className={`delete customButton ${props.videoList[props.index].status !== videoStatus.EXPORTING ? 'enabledButton' : ''}`}
                     onClick={() => removeVideo(props.index, props.videoList, props.setVideoList, props.setVideoIndex)}>
                 X
             </button>
@@ -90,6 +135,7 @@ export default function VideoCardWrapper(props: {
                                                            setIsPopup={props.setIsPopup}
                                                            setCurrentDialog={props.setCurrentDialog}/>
     )
+
     return (
         <div className="horizontal-scrolling-wrapper">
             {videoCards}
