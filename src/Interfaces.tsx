@@ -37,7 +37,7 @@ export function setVideoProps(
 export const videoStatus = {
     DOWNLOADING: 0,
     DOWNLOAD_COMPLETE: 1,
-    EXPORTING: 2,
-    EXPORT_COMPLETE: 3,
-    EXPORT_FAILED: 4
+    DOWNLOAD_FAILED: 2,
+    EXPORTING: 3,
+    EXPORT_COMPLETE: 4
 }

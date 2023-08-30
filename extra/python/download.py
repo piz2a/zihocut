@@ -2,7 +2,7 @@ import youtube_dl
 import sys
 
 ydl_opts = {
-    'format': "bestvideo[height<=480][ext=mp4]",
+    'format': "bestvideo[height<=480][ext=mp4][vcodec!*=av01]",
     'outtmpl': f"{sys.argv[2]}/%(id)s.%(ext)s"
 }
 

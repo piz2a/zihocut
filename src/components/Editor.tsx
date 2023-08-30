@@ -35,18 +35,18 @@ function exportVideo(
         ))
         return
     }
+    if (videoList[videoIndex].intervals.length === 0) {
+        setDialog(setIsPopup, setCurrentDialog, (
+            <dialog open>
+                <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+                <label>No intervals to trim.<br/>Add intervals and try again.</label>
+                <button onClick={() => setIsPopup(false)} id="enterButton">OK</button>
+            </dialog>
+        ))
+        return
+    }
     const { ipcRenderer } = window.require('electron')
-    ipcRenderer.invoke('EXPORT_VIDEO', videoList[videoIndex].intervals.map((interval) => [interval.from, interval.to]))
-    ipcRenderer.on('EXPORT_COMPLETE', (event: any, message: {id: string, complete: boolean}) => {
-        if (message.id === videoList[videoIndex].id)
-            setVideoProps(
-                'status',
-                videoIndex,
-                message.complete ? videoStatus.EXPORT_COMPLETE : videoStatus.EXPORT_FAILED,
-                videoList,
-                setVideoList
-            )
-    })
+    ipcRenderer.invoke('EXPORT_VIDEO', videoList[videoIndex].id, videoList[videoIndex].intervals.map((interval) => [interval.from, interval.to]))
     setVideoProps("status", videoIndex, videoStatus.EXPORTING, videoList, setVideoList)
 }
 

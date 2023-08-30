@@ -1,19 +1,26 @@
-import React, {JSX, useEffect} from "react"
+import React, {JSX} from "react"
 import {setVideoProps, Video, videoStatus} from "../Interfaces";
-import {setDialog} from "../App";
+import {NO_INTERVAL_SELECTED} from "./Editor";
+import {updateVideoIndex} from "../App";
 
 
 function removeVideo(
     index: number,
     videoList: Video[],
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number,
     setVideoIndex: React.Dispatch<React.SetStateAction<number>>
 ) {
     if (videoList[index].status === videoStatus.EXPORTING)
         return
-    if (index >= videoList.length - 1)
-        setVideoIndex(-1)
-    setVideoList([...videoList.slice(0, index), ...videoList.slice(index + 1)])
+    videoList = [...videoList.slice(0, index), ...videoList.slice(index + 1)]
+    setVideoList(videoList)
+    console.log(videoList)
+    if (videoIndex === index) {
+        updateVideoIndex(videoList, setVideoList, videoIndex, setVideoIndex)
+    } else if (videoIndex > index) {
+        setVideoIndex(videoIndex - 1)
+    } // if videoIndex < index: nothing to change
 }
 
 function DownloadProgress() {
@@ -26,12 +33,25 @@ function DownloadProgress() {
 
 function DownloadComplete(props: {
     index: number,
-    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>,
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
 }) {
     return (
         <>
             <p>Download Complete</p>
-            <button onClick={() => props.setVideoIndex(props.index)}>Select</button>
+            <button onClick={() => {
+                props.setVideoIndex(props.index)
+                setVideoProps("currentInterval", props.index, NO_INTERVAL_SELECTED, props.videoList, props.setVideoList)
+            }}>Select</button>
+        </>
+    )
+}
+
+function DownloadFailed() {
+    return (
+        <>
+            <p>Download Failed</p>
         </>
     )
 }
@@ -39,7 +59,7 @@ function DownloadComplete(props: {
 function ExportProgress() {
     return (
         <>
-            <p>Exporting</p>
+            <p>Exporting...</p>
         </>
     )
 }
@@ -48,14 +68,6 @@ function ExportComplete() {
     return (
         <>
             <p>Export Complete</p>
-        </>
-    )
-}
-
-function ExportFailed() {
-    return (
-        <>
-            <p>Export Failed</p>
         </>
     )
 }
@@ -69,28 +81,6 @@ function VideoCard(props: {
     setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
     setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
 }) {
-    const { ipcRenderer } = window.require('electron')
-
-    useEffect(() => {
-        ipcRenderer.on('DOWNLOAD_COMPLETE', (event: any, message: {id: string, complete: boolean}) => {
-            if (message.complete) {
-                if (message.id === props.videoList[props.index].id)
-                    setVideoProps("status", props.index, videoStatus.DOWNLOAD_COMPLETE, props.videoList, props.setVideoList)
-                if (props.videoIndex === -1) {
-                    props.setVideoIndex(0)
-                }
-            } else {
-                setDialog(props.setIsPopup, props.setCurrentDialog, (
-                    <dialog open>
-                        <button onClick={() => props.setIsPopup(false)} id="closeButton">X</button>
-                        <label>Download failed: {message.id}</label>
-                        <button onClick={() => props.setIsPopup(false)} id="enterButton">OK</button>
-                    </dialog>
-                ))
-            }
-        })
-    }, [])
-
     return (
         <div className="card">
             <p className="title">{props.videoList[props.index].id}</p>
@@ -100,18 +90,18 @@ function VideoCard(props: {
                         case videoStatus.DOWNLOADING:
                             return <DownloadProgress/>
                         case videoStatus.DOWNLOAD_COMPLETE:
-                            return <DownloadComplete index={props.index} setVideoIndex={props.setVideoIndex}/>
+                            return <DownloadComplete index={props.index} setVideoIndex={props.setVideoIndex} videoList={props.videoList} setVideoList={props.setVideoList}/>
+                        case videoStatus.DOWNLOAD_FAILED:
+                            return <DownloadFailed/>
                         case videoStatus.EXPORTING:
                             return <ExportProgress/>
                         case videoStatus.EXPORT_COMPLETE:
                             return <ExportComplete/>
-                        case videoStatus.EXPORT_FAILED:
-                            return <ExportFailed/>
                     }
                 })()}
             </div>
             <button className={`delete customButton ${props.videoList[props.index].status !== videoStatus.EXPORTING ? 'enabledButton' : ''}`}
-                    onClick={() => removeVideo(props.index, props.videoList, props.setVideoList, props.setVideoIndex)}>
+                    onClick={() => removeVideo(props.index, props.videoList, props.setVideoList, props.videoIndex, props.setVideoIndex)}>
                 X
             </button>
         </div>

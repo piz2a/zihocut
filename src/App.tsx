@@ -1,6 +1,6 @@
 import React, {JSX, useEffect, useState} from 'react'
 import './styles/App.scss'
-import {Video, videoStatus} from "./Interfaces"
+import {setVideoProps, Video, videoStatus} from "./Interfaces"
 import VideoCardWrapper from "./components/VideoCardWrapper"
 import Editor, {NEW_INTERVAL} from "./components/Editor"
 
@@ -34,6 +34,23 @@ export function setDialog(
     setCurrentDialog(<DialogElement/>)
 }
 
+export function updateVideoIndex(
+    videoList: Video[],
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
+    videoIndex: number,
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
+) {
+    let editableVideoExist = false
+    for (let i = 0; i < videoList.length; i++) {
+        if (videoList[i].status === videoStatus.DOWNLOAD_COMPLETE) {
+            setVideoIndex(i)
+            editableVideoExist = true
+            break
+        }
+    }
+    if (!editableVideoExist) setVideoIndex(-1)
+}
+
 
 export default function App() {
     const [videoList, setVideoList] = useState<Video[]>([])
@@ -59,13 +76,6 @@ export default function App() {
         setVideoList([...videoList, {id: id, status: videoStatus.DOWNLOADING, intervals: [], currentInterval: NEW_INTERVAL}])
     }
 
-    const handleDrop = async (event: any) => {
-        event.preventDefault()
-        const text = event.dataTransfer.getData('text')
-        console.log(text)
-        await addVideo(text)
-    }
-
     const handleDragOver = (event: any) => {
         event.preventDefault()
     }
@@ -86,9 +96,76 @@ export default function App() {
     }
 
     useEffect(() => {
+        const handleDrop = async (event: any) => {
+            event.preventDefault()
+            const text = event.dataTransfer.getData('text')
+            console.log(text)
+            await addVideo(text)
+        }
         document.body.addEventListener('dragover', handleDragOver)
         document.body.addEventListener('drop', handleDrop)
-    }, [])
+        ipcRenderer.on('DOWNLOAD_COMPLETE', (event: any, message: {id: string, code: string}) => {
+            console.log(videoList.length)
+            videoList.forEach((video, index) => {
+                console.log(index)
+                if (message.id === video.id)
+                    setVideoProps("status", index, videoStatus.DOWNLOAD_COMPLETE, videoList, setVideoList)
+            })
+            if (videoIndex === -1) {
+                updateVideoIndex(videoList, setVideoList, videoIndex, setVideoIndex)
+            }
+        })
+        ipcRenderer.on('DOWNLOAD_FAILED', (event: any, message: {id: string, code: number}) => {
+            setDialog(setIsPopup, setCurrentDialog, (
+                <dialog open>
+                    <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+                    <label>Download failed: {message.id}<br/>Exit code: {message.code}</label>
+                    <button onClick={() => setIsPopup(false)} id="enterButton">OK</button>
+                </dialog>
+            ))
+            videoList.forEach((video, index) => {
+                if (message.id === video.id)
+                    setVideoProps("status", index, videoStatus.DOWNLOAD_FAILED, videoList, setVideoList)
+            })
+            if (videoIndex === -1) {
+                setVideoIndex(0)
+            }
+        })
+        ipcRenderer.on('EXPORT_COMPLETE', (event: any, message: {id: string}) => {
+            videoList.forEach((video, index) => {
+                if (message.id === video.id) {
+                    setVideoProps(
+                        'status',
+                        index,
+                        videoStatus.EXPORT_COMPLETE,
+                        videoList,
+                        setVideoList
+                    )
+                    updateVideoIndex(videoList, setVideoList, videoIndex, setVideoIndex)
+                }
+            })
+        })
+        ipcRenderer.on('EXPORT_FAILED', (event: any, message: {id: string}) => {
+            videoList.forEach((video, index) => {
+                if (message.id === video.id) {
+                    setDialog(setIsPopup, setCurrentDialog, (
+                        <dialog open>
+                            <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+                            <label>Export failed: {message.id}</label>
+                            <button onClick={() => setIsPopup(false)} id="enterButton">OK</button>
+                        </dialog>
+                    ))
+                    setVideoProps(
+                        'status',
+                        index,
+                        videoStatus.DOWNLOAD_COMPLETE,
+                        videoList,
+                        setVideoList
+                    )
+                }
+            })
+        })
+    }, [videoList, videoIndex, ipcRenderer])
 
     return (
         <div className="App">
@@ -106,7 +183,7 @@ export default function App() {
                                   setCurrentDialog={setCurrentDialog}/>
             </div>
             <hr/>
-            {videoList.length !== 0 && videoIndex !== -1 ?
+            {videoList.length !== 0 && videoIndex !== -1?
                 <Editor videoList={videoList}
                         setVideoList={setVideoList}
                         videoIndex={videoIndex}

@@ -11,10 +11,15 @@ const BASE_URL = 'http://localhost:3000'
 let window: BrowserWindow | null
 
 const VIDEO_DIRNAME = 'ZihoCut'
+const EXPORT_DIRNAME = "ZihoCutExports"
 const PYTHON_BASE_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../extra/python')
 const VIDEO_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
-if (!fs.existsSync(VIDEO_PATH)){
+if (!fs.existsSync(VIDEO_PATH)) {
     fs.mkdirSync(VIDEO_PATH);
+}
+const EXPORT_PATH = path.join(app.getPath('documents'), EXPORT_DIRNAME)
+if (!fs.existsSync(EXPORT_PATH)) {
+    fs.mkdirSync(EXPORT_PATH)
 }
 
 function getId(URL: string): string | null {
@@ -72,7 +77,7 @@ ipcMain.handle('GET_ID_FROM_URL', (event, url: string) => getId(url))
 ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
     const sendCompleteMessage = (code: number | null) => {
         if (window !== null)
-            window.webContents.send('DOWNLOAD_COMPLETE', {id: id, complete: code === 0})
+            window.webContents.send(code === 0 ? 'DOWNLOAD_COMPLETE' : 'DOWNLOAD_FAILED', {id: id, code: code})
     }
     console.log(`Downloading video: ${id}`)
     if (fs.existsSync(path.join(VIDEO_PATH, `${id}.mp4`))) {
@@ -84,15 +89,35 @@ ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
         path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
         [path.join(PYTHON_BASE_PATH, 'download.py'), `https://www.youtube.com/watch?v=${id}`, VIDEO_PATH]
     ).on('close', (code) => {
-        console.log(`ID: ${id}, Python script code: ${code}`)
+        console.log(`ID: ${id}, Download Python script code: ${code}`)
         sendCompleteMessage(code)
     }).stderr.on('data', (data) => {
         console.log(data.toString())
     })
 })
-ipcMain.handle('EXPORT_VIDEO', (event, intervals: number[][]) => {
+ipcMain.handle('EXPORT_VIDEO', (event, id: string, intervals: number[][]) => {
     intervals.forEach((interval) => {
         console.log(interval[0], interval[1])
+    })
+    const sendCompleteMessage = (code: number | null) => {
+        if (window !== null)
+            window.webContents.send(code === 0 ? 'EXPORT_COMPLETE' : 'EXPORT_FAILED', {id: id})
+    }
+    console.log(`Exporting video: ${id}`)
+    spawn(
+        path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
+        [
+            path.join(PYTHON_BASE_PATH, 'export.py'),
+            id,
+            VIDEO_PATH,
+            EXPORT_PATH,
+            ...intervals.map((interval) => `${interval[0]}-${interval[1]}`)
+        ]
+    ).on('close', (code) => {
+        console.log(`ID: ${id}, Export Python script code: ${code}`)
+        sendCompleteMessage(code)
+    }).stderr.on('data', (data) => {
+        console.log(data.toString())
     })
 })
 
