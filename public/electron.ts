@@ -80,18 +80,26 @@ ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
             window.webContents.send(code === 0 ? 'DOWNLOAD_COMPLETE' : 'DOWNLOAD_FAILED', {id: id, code: code})
     }
     console.log(`Downloading video: ${id}`)
-    if (fs.existsSync(path.join(VIDEO_PATH, `${id}.mp4`))) {
-        console.log('Video already exists: Downloading canceled')
-        setTimeout(() => sendCompleteMessage(0), 500)
-        return
-    }
-    spawn(
+
+    const python = spawn(
         path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
         [path.join(PYTHON_BASE_PATH, 'download.py'), `https://www.youtube.com/watch?v=${id}`, VIDEO_PATH]
-    ).on('close', (code) => {
+    )
+
+    python.on('close', (code) => {
         console.log(`ID: ${id}, Download Python script code: ${code}`)
         sendCompleteMessage(code)
-    }).stderr.on('data', (data) => {
+    })
+    python.stdout.on('data', (data) => {
+        const lines = data.toString().split('\n')
+        lines.forEach((line: string) => {
+            if (line.startsWith('VIDEO_TITLE=') && window !== null) {
+                console.log(line)
+                window.webContents.send('VIDEO_TITLE', {id: id, title: line.slice('VIDEO_TITLE='.length)})
+            }
+        })
+    })
+    python.stderr.on('data', (data) => {
         console.log(data.toString())
     })
 })

@@ -148,13 +148,21 @@ export default function Slider(props: {
                     if (props.currentTime < rangeValue1) {
                         setSliderValue(0, props.currentTime)
                     }
-                }}>1</button>
+                }} className="customButton setSliderTimeButton">
+                    Move
+                    <span className="sliderIcon red"></span>
+                    to current time
+                </button>
                 <button onClick={() => {
                     if (props.currentTime > rangeValue0) {
                         setSliderValue(1, props.currentTime)
                     }
-                }}>2</button>
-                <button onClick={() => testInterval(getSliderValue(0), getSliderValue(1))}>Play Interval</button>
+                }} className="customButton setSliderTimeButton">
+                    Move
+                    <span className="sliderIcon blue"></span>
+                    to current time
+                </button>
+                {/*<button onClick={() => testInterval(getSliderValue(0), getSliderValue(1))}>Play Interval</button>*/}
                 <button onClick={() => saveInterval(
                     props.videoList[props.videoIndex].currentInterval,
                     props.videoIndex,
@@ -162,13 +170,14 @@ export default function Slider(props: {
                     props.setVideoList,
                     getSliderValue(0),
                     getSliderValue(1)
-                )}>
+                )} className="customButton saveIntervalButton">
                     {props.videoList[props.videoIndex].currentInterval === NEW_INTERVAL ?
-                        "Add Interval" :
-                        `Save Interval #${props.videoList[props.videoIndex].currentInterval + 1}`
+                        "Add interval" :
+                        `Save interval #${props.videoList[props.videoIndex].currentInterval + 1}`
                     }
                 </button>
-                <button onClick={() => cancelEdit(props.videoIndex, props.videoList, props.setVideoList)}>Cancel</button>
+                <button onClick={() => cancelEdit(props.videoIndex, props.videoList, props.setVideoList)}
+                        className="customButton cancelEditButton">Cancel</button>
             </div>
         </>
     )

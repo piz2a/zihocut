@@ -3,7 +3,9 @@ import React, {JSX, useEffect, useRef, useState} from "react"
 import {setVideoProps, Video, videoStatus} from "../Interfaces";
 import Slider from "./Slider";
 import IntervalWrapper from "./IntervalWrapper";
-import {setDialog} from "../App";
+import {EnterButton, setDialog} from "./Dialog";
+import '../styles/Editor.scss'
+import '../styles/Footer.scss'
 
 export const NEW_INTERVAL = -1
 export const NO_INTERVAL_SELECTED = -2
@@ -27,21 +29,19 @@ function exportVideo(
 ) {
     if (videoList[videoIndex].currentInterval !== NO_INTERVAL_SELECTED) {
         setDialog(setIsPopup, setCurrentDialog, (
-            <dialog open>
-                <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+            <>
                 <label>Save the current working interval or cancel it<br/>and try again.</label>
-                <button onClick={() => setIsPopup(false)} id="enterButton">OK</button>
-            </dialog>
+                <EnterButton onClick={() => setIsPopup(false)}>OK</EnterButton>
+            </>
         ))
         return
     }
     if (videoList[videoIndex].intervals.length === 0) {
         setDialog(setIsPopup, setCurrentDialog, (
-            <dialog open>
-                <button onClick={() => setIsPopup(false)} id="closeButton">X</button>
+            <>
                 <label>No intervals to trim.<br/>Add intervals and try again.</label>
-                <button onClick={() => setIsPopup(false)} id="enterButton">OK</button>
-            </dialog>
+                <EnterButton onClick={() => setIsPopup(false)}>OK</EnterButton>
+            </>
         ))
         return
     }
@@ -99,12 +99,16 @@ export default function Editor(props: {
             </div>
             <hr/>
             <div className="footer">
-                <div className="sliderWrapper">
+                <div className="sliderWrapper prevent-select">
                     {props.videoList[props.videoIndex].currentInterval === NO_INTERVAL_SELECTED ?
                         <>
-                            <button onClick={() => createInterval(props.videoIndex, props.videoList, props.setVideoList)}>
-                                New Interval
-                            </button>
+                            <div className="slider"></div>
+                            <div className="sliderButtonWrapper">
+                                <button onClick={() => createInterval(props.videoIndex, props.videoList, props.setVideoList)}
+                                        className="customButton newIntervalButton">
+                                    New Interval
+                                </button>
+                            </div>
                         </> :
                         <>
                             <Slider playerRef={playerRef}
@@ -119,9 +123,9 @@ export default function Editor(props: {
                         </>
                     }
                 </div>
-                <div className="bottomButtonWrapper">
+                <div className="bottomButtonWrapper prevent-select">
                     <button className={
-                        `exportButton ${props.videoList[props.videoIndex].currentInterval === NO_INTERVAL_SELECTED ? 'enabledButton' : ''}`
+                        `exportButton customButton ${props.videoList[props.videoIndex].currentInterval === NO_INTERVAL_SELECTED ? 'enabledButton' : ''}`
                     } onClick={() => exportVideo(props.videoList, props.setVideoList, props.videoIndex, props.setVideoIndex, props.setIsPopup, props.setCurrentDialog)}>
                         Export
                     </button>

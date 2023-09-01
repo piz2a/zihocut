@@ -1,0 +1,94 @@
+.interval-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  white-space: nowrap;
+  list-style-type: none;
+
+  .noInterval {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .interval {
+    padding: 10px;
+    display: inline-block;
+    font-family: Arial, sans-serif;
+
+    span {
+      color: white;
+      font-size: 14px;
+      min-width: 3em;
+      max-width: 3em;
+      height: 1.5em;
+    }
+
+    button.delete, button.edit {
+      font-size: 20px;
+      width: 1.8em;
+      height: 1.8em;
+      border-radius: 0.3em;
+      margin-left: 0.6em;
+    }
+
+    button.delete {
+      background: #4f4f59;
+      cursor: default;
+
+      &.enabledButton {
+        background: #ff5e5e;
+
+        &:hover {
+          background: #ffb4b4;
+        }
+      }
+    }
+
+    button.edit {
+      background: #4f4f59;
+      cursor: default;
+
+      &.enabledButton {
+        background: #2b89ff;
+
+        &:hover {
+          background: #6daeff;
+        }
+      }
+    }
+
+    button.enabledButton {
+      cursor: pointer;
+    }
+  }
+}
+
+.interval-wrapper-flexbox {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  .interval {
+    flex: 0 0 auto;
+    margin-bottom: 3px;
+  }
+}
+
+.interval-wrapper, .interval-wrapper-flexbox {
+  min-width: 250px;
+  max-width: 250px;
+  min-height: 300px;
+  max-height: 300px;
+  -webkit-overflow-scrolling: touch;
+}
+
+h2.emptyVideoList {
+  color: white;
+  text-align: center;
+  margin-top: 23%;
+}

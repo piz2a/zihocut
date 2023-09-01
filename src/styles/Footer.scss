@@ -1,0 +1,23 @@
+.footer {
+  padding: 0 14px;
+
+  .bottomButtonWrapper {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+
+    .exportButton {
+      font-size: 16px;
+      width: 7em;
+      height: 2.5em;
+      border-radius: 0.5em;
+      color: white;
+      font-family: Arial, sans-serif;
+      background: #37b2ff;
+
+      &:hover {
+        background: #84cefd;
+      }
+    }
+  }
+}

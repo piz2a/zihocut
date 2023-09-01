@@ -7,6 +7,7 @@ export interface Interval {
 
 export interface Video {
     id: string
+    title: string
     status: number
     intervals: Interval[]
     currentInterval: number

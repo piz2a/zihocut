@@ -3,10 +3,16 @@ import {Interval, Video, setVideoProps} from "../Interfaces";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPencil, faX} from "@fortawesome/free-solid-svg-icons";
 import {logStep} from "./Slider";
+import '../styles/IntervalWrapper.scss'
 
+
+function _0nd(x: number, n: number) {
+    const len = 2 - Math.floor(x).toString().length + 1
+    return len > 0 ? new Array(len).join('0') + x.toString() : x.toString()
+}
 
 export function minAndSec(time: number) {
-    return `${Math.floor(time / 60)}:${(time % 60).toFixed(-logStep)}`
+    return `${_0nd(Math.floor(time / 60), 2)}:${_0nd(parseFloat((time % 60).toFixed(-logStep)), 2)}`
 }
 
 function editInterval(
@@ -32,14 +38,16 @@ function removeInterval(
     videoList: Video[],
     setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
 ) {
-    const video = videoList[videoIndex]
-    setVideoProps(
-        "intervals",
-        videoIndex,
-        [...video.intervals.slice(0, index), ...video.intervals.slice(index + 1)],
-        videoList,
-        setVideoList
-    )
+    if (videoList[videoIndex].currentInterval === -2) {
+        const video = videoList[videoIndex]
+        setVideoProps(
+            "intervals",
+            videoIndex,
+            [...video.intervals.slice(0, index), ...video.intervals.slice(index + 1)],
+            videoList,
+            setVideoList
+        )
+    }
 }
 
 function IntervalComponent(
@@ -50,14 +58,12 @@ function IntervalComponent(
 ) {
     return (
         <div className="interval">
-            <span className="t1">{minAndSec(t1)}</span>
-            <span className="to">~</span>
-            <span className="t2">{minAndSec(t2)}</span>
+            <span>{minAndSec(t1)} ~ {minAndSec(t2)}</span>
             <button className={`edit customButton ${videoList[videoIndex].currentInterval === -2 ? 'enabledButton' : ''}`}
                     onClick={() => editInterval(index, videoIndex, videoList, setVideoList)}>
                 <FontAwesomeIcon icon={faPencil} />
             </button>
-            <button className="delete customButton"
+            <button className={`delete customButton ${videoList[videoIndex].currentInterval === -2 ? 'enabledButton' : ''}`}
                     onClick={() => removeInterval(index, videoIndex, videoList, setVideoList)}>
                 <FontAwesomeIcon icon={faX} />
             </button>
@@ -76,11 +82,11 @@ export default function IntervalWrapper(props: {
         )
     )
     return (
-        <div className="interval-wrapper">
+        <div className="interval-wrapper prevent-select">
             {intervals.length !== 0 ?
                 intervals :
                 <div className="noInterval">
-                    <h3>Add Intervals Below</h3>
+                    <h3>Add intervals below</h3>
                 </div>
             }
         </div>

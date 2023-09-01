@@ -1,283 +1,177 @@
 body {
-    background-color: #28282d;
-}
-
-.fadeMe {
-    opacity: 0.5;
-    background: #000;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    top: 0;
-    left: 0;
-    position: fixed;
-}
-
-dialog {
-    z-index: 10;
-    position: absolute;
-    vertical-align: middle;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-    border: none;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 400px;
-
-    button#closeButton {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-    }
-
-    button#enterButton {
-        margin-right: 10px;
-        margin-left: auto;
-    }
-}
-
-hr {
-    width: 97%;
-    height: 1px;
-    background-color: white;
-    border: 0;
-}
-
-.vr {
-    border-left: 1px solid white;
-    height: 300px;
-}
-
-.prevent-select {
-    user-select: none;
+  background-color: #28282d;
 }
 
 button.customButton {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    cursor: pointer;
-    transition: 0.3s;
-    background: #ff5e5e;
-}
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: 0.3s;
 
-button.customButton:hover {
-    background: #ffb4b4;
+  &:hover {
     outline: 0;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
-button.customButton:disabled {
-    opacity: 0.5;
+.fadeMe {
+  opacity: 0.5;
+  background: #000;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  position: fixed;
+}
+
+dialog {
+  position: absolute;
+  vertical-align: middle;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  border: 1px solid white;
+  gap: 20px;
+  width: 400px;
+  border-radius: 1em;
+  z-index: 10;
+  background: #232323;
+
+  .dialogWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 0.7em;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    color: white;
+
+    input {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      width: 90%;
+      margin-left: 1em;
+      height: 1.8em;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      background: #232323;
+      color: white;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    button.closeButton {
+      position: absolute;
+      top: -0.4em;
+      right: -0.4em;
+      width: 2.4em;
+      height: 2.4em;
+      border-radius: 0.5em;
+      background: #ff5e5e;
+    }
+
+    button.enterButton {
+      margin-right: 10px;
+      margin-left: auto;
+      width: 6em;
+      height: 2.4em;
+      background: #3f3f3f;
+      border: 1px solid white;
+      color: white;
+      border-radius: 0.5em;
+    }
+  }
+}
+
+hr {
+  width: 97%;
+  height: 1px;
+  background-color: white;
+  border: 0;
+}
+
+.vr {
+  border-left: 1px solid white;
+  height: 300px;
+}
+
+.prevent-select {
+  user-select: none;
 }
 
 // Scrollbar
 .horizontal-scrolling-wrapper, .horizontal-scrolling-wrapper-flexbox, .interval-wrapper, .interval-wrapper-flexbox {
-    &::-webkit-scrollbar {
-        width: 16px;
-        height: 16px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background-color: #01314f;
-        border-radius: 10px;
-        background-clip: padding-box;
-        border: 2px solid transparent;
-    }
-    &::-webkit-scrollbar-track {
-        background-color: #444444;
-        border-radius: 10px;
-        box-shadow: inset 0 0 5px white;
-    }
+  &::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #01314f;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #444444;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px white;
+  }
 }
 
 .header {
-    padding: 10px 10px;
-    display: flex;
+  padding: 10px 10px;
+  display: flex;
 
-    .horizontal-scrolling-wrapper {
-        overflow-x: scroll;
-        overflow-y: hidden;
-        white-space: nowrap;
-        background-color: #1c1c1f;
-        border-radius: 16px;
+  .addCard {
+    cursor: pointer;
+    min-width: 150px;
+    max-width: 150px;
+    height: 150px;
+    text-align: center;
+    margin-right: 10px;
+    color: black;
+    border-radius: 20px;
+    background: #ff5e5e;
 
-        .card {
-            display: inline-block;
-        }
+    &:hover {
+      background: #ffb4b4;
     }
 
-    .horizontal-scrolling-wrapper-flexbox {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-
-        .card {
-            flex: 0 0 auto;
-            margin-right: 3px;
-        }
+    h2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 100px;
+      margin-top: 0;
+      margin-bottom: 0;
+      color: white;
     }
 
-    .horizontal-scrolling-wrapper, .horizontal-scrolling-wrapper-flexbox {
-        height: 170px;
-        min-width: 620px;
-        max-width: 620px;
-        -webkit-overflow-scrolling: touch;
+    p {
+      margin-top: -10px;
+      font-family: "Arial Black", sans-serif;
+      font-size: 16px;
     }
-
-    .card {
-        border: 1px solid #ffffff;
-        border-radius: 16px;
-        margin-right: 5px;
-        width: 250px;
-        height: 150px;
-        background: #4f4f59;
-
-        .download {
-            progress::-webkit-progress-bar {
-                background:#f0f0f0;
-                border-radius:10px;
-                box-shadow: inset 3px 3px 10px #ccc;
-            }
-            progress::-webkit-progress-value {
-                border-radius:10px;
-                background: #1D976C;
-                background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);
-                background: linear-gradient(to right, #93F9B9, #1D976C);
-
-            }
-        }
-    }
-
-    .addCard {
-        cursor:pointer;
-        min-width: 150px;
-        max-width: 150px;
-        height: 150px;
-        text-align: center;
-        margin-right: 10px;
-        color: black;
-        border-radius: 20px;
-
-        h2 {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 100px;
-            margin-top: 0;
-            margin-bottom: 0;
-            color: white;
-        }
-
-        p {
-            margin-top: -10px;
-            font-family: "Arial Black", sans-serif;
-            font-size: 16px;
-        }
-    }
+  }
 }
 
 .main {
-    padding: 5px 10px;
-    display: flex;
-    justify-content: space-around;
-
-    .editor {
-        .player-wrapper {
-            width: auto; // Reset width
-            height: auto; // Reset height
-        }
-
-        .react-player {
-            padding-top: 56.25%; // Percentage ratio for 16:9
-            position: relative; // Set to relative
-        }
-
-        .react-player > div {
-            position: absolute; // Scaling will occur since parent is relative now
-        }
-    }
-
-    .interval-wrapper {
-        display: flex;
-        flex-direction: column;
-        .interval {
-            padding: 10px;
-            .t1, .t2 {
-                color: white;
-                font-size: 14px;
-                min-width: 3em;
-                max-width: 3em;
-                height: 1.5em;
-            }
-            .to {
-                color: white;
-                font-size: 14px;
-                margin-left: 10px;
-                margin-right: 10px;
-            }
-            button.delete, button.edit {
-                font-size: 20px;
-                width: 1.8em;
-                height: 1.8em;
-                border-radius: 0.3em;
-                margin-left: 0.6em;
-            }
-            button.edit {
-                background: #4f4f59;
-                cursor: default;
-            }
-            button.enabledButton {
-                background: #2b89ff;
-                cursor: pointer;
-                &:hover {
-                    background: #6daeff;
-                }
-            }
-        }
-    }
-
-    .interval-wrapper {
-        overflow-x: hidden;
-        overflow-y: scroll;
-        white-space: nowrap;
-        list-style-type: none;
-
-        .interval {
-            display: inline-block;
-        }
-    }
-
-    .interval-wrapper-flexbox {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-
-        .interval {
-            flex: 0 0 auto;
-            margin-bottom: 3px;
-        }
-    }
-
-    .interval-wrapper, .interval-wrapper-flexbox {
-        min-width: 250px;
-        max-width: 250px;
-        min-height: 300px;
-        max-height: 300px;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    h2.emptyVideoList {
-        color: white;
-        text-align: center;
-        margin-top: 23%;
-    }
-}
-
-.footer {
-    padding: 0 14px;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-around;
 }

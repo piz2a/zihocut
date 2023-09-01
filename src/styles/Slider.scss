@@ -1,59 +1,115 @@
-section.range-slider {
-  position: relative;
-  width: 200px;
-  height: 35px;
-  text-align: center;
-}
-
-section.range-slider .rangeValues {
-  color: white;
-}
-
-section.range-slider input {
-  pointer-events: none;
-  position: absolute;
-  overflow: hidden;
-  left: 0;
-  top: 15px;
-  width: 760px;
-  outline: none;
-  height: 18px;
-  margin: 0;
-  padding: 0.9em 0;
-  -webkit-appearance: none;
-  background: transparent;
-
-  &.range1 {
-    z-index: 13;
-    &::-webkit-slider-thumb {
-      background: #ff5e5e;
-    }
+.slider {
+  section.range-slider {
+    position: relative;
+    width: 200px;
+    height: 35px;
+    text-align: center;
   }
 
-  &.range2 {
-    z-index: 12;
-    &::-webkit-slider-thumb {
-      background: #5e5eff;
-    }
-  }
-
-  &::-webkit-slider-runnable-track {
-    -webkit-appearance: none;
-    height: 0.5rem;
-    border-radius: 1em;
+  section.range-slider .rangeValues {
     color: white;
   }
 
-  &::-webkit-slider-thumb {
+  section.range-slider input {
+    pointer-events: none;
+    position: absolute;
+    overflow: hidden;
+    left: 0;
+    top: 15px;
+    width: 760px;
+    outline: none;
+    height: 18px;
+    margin: 0;
+    padding: 0.9em 0;
     -webkit-appearance: none;
-    pointer-events: all;
-    position: relative;
-    outline: 0;
-    width: 2em;
-    height: 2em;
-    cursor: ew-resize;
-    margin-top: -0.7em;
-    border-radius: 50%;
-    border: 0.2em solid white;
+    background: transparent;
+
+    &.range1 {
+      z-index: 13;
+      &::-webkit-slider-thumb {
+        background: #ff5e5e;
+      }
+    }
+
+    &.range2 {
+      z-index: 12;
+      &::-webkit-slider-thumb {
+        background: #5e5eff;
+      }
+    }
+
+    &::-webkit-slider-runnable-track {
+      -webkit-appearance: none;
+      height: 0.5rem;
+      border-radius: 1em;
+      color: white;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      pointer-events: all;
+      position: relative;
+      outline: 0;
+      width: 2em;
+      height: 2em;
+      cursor: ew-resize;
+      margin-top: -0.7em;
+      border-radius: 50%;
+      border: 0.2em solid white;
+    }
+  }
+  height: 60px;
+}
+
+.sliderButtonWrapper {
+  display: flex;
+  justify-content: left;
+  gap: 1em;
+  height: 2.5em;
+
+  button {
+    border-radius: 0.5em;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+  }
+
+  .setSliderTimeButton {
+    border-radius: 0.5em;
+    width: 12em;
+    padding-bottom: 0.3em;
+
+    span.sliderIcon {
+      width: 1.2em;
+      height: 1.2em;
+      border-radius: 50%;
+      border: 0.2em solid white;
+      display: inline-block;
+      margin-bottom: -0.4em;
+      margin-left: 0.2em;
+      margin-right: 0.2em;
+
+      &.red {
+        background: #ff5e5e;
+      }
+
+      &.blue {
+        background: #5e5eff;
+      }
+    }
+  }
+
+  .saveIntervalButton {
+    border-radius: 0.5em;
+    width: 7em;
+  }
+
+  .cancelEditButton {
+    border-radius: 0.5em;
+    width: 5em;
+  }
+
+  .newIntervalButton {
+    border-radius: 0.5em;
+    width: 8em;
   }
 }
