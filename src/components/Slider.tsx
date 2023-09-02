@@ -44,9 +44,11 @@ function onChange(
     }
 }
 
+/*
 function testInterval(from: number, to: number) {
     // Coming soon
 }
+ */
 
 function saveInterval(
     intervalIndex: number,

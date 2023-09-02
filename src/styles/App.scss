@@ -1,5 +1,9 @@
 body {
   background-color: #28282d;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 button.customButton {

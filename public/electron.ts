@@ -21,7 +21,7 @@ const EXECUTABLE_PATH = path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11
 export let DOWNLOAD_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
 export let EXPORT_PATH = path.join(app.getPath('documents'), EXPORT_DIRNAME)
 
-export const CONFIG_FILE_PATH = path.join(ASSETS_PATH, '../config.txt')
+export const CONFIG_FILE_PATH = path.join(app.getPath('userData'), 'config.txt')
 if (!fs.existsSync(CONFIG_FILE_PATH)) {
     fs.writeFileSync(CONFIG_FILE_PATH, `DOWNLOAD_PATH=${DOWNLOAD_PATH}\nEXPORT_PATH=${EXPORT_PATH}`)
 }
@@ -62,7 +62,7 @@ function getId(URL: string): string | null {
 function createWindow() {
     window = new BrowserWindow({
         width: 800,
-        height: 700,
+        height: 730,
         icon: path.join(__dirname, 'logo64.png'),
         webPreferences: {
             contextIsolation: false,
@@ -161,5 +161,6 @@ app.on('ready', () => {
 })
 
 app.on('window-all-closed', () => {
+    // if (isDev && fs.existsSync(CONFIG_FILE_PATH)) fs.unlinkSync(CONFIG_FILE_PATH)
     if (process.platform !== 'darwin') app.quit()
 })
