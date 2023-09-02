@@ -1,5 +1,5 @@
 {
-  "name": "zihocut",
+  "name": "ZihoCut",
   "version": "0.1.0",
   "description": "Drag-and-drop YouTube links and cut the videos instantly!",
   "private": true,
@@ -36,7 +36,8 @@
     "appId": "io.github.piz2a.zihocut",
     "asar": true,
     "extraFiles": [
-      "extra"
+      "assets",
+      "config.txt"
     ],
     "protocols": {
       "name": "zihocut",

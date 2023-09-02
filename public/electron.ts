@@ -1,9 +1,10 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import * as path from 'path'
 import * as isDev from 'electron-is-dev'
 import * as fs from 'fs'
 import * as url from "url";
 import { spawn } from "child_process";
+import { template } from "./applicationMenu";
 
 
 const BASE_URL = 'http://localhost:3000'
@@ -12,15 +13,34 @@ let window: BrowserWindow | null
 
 const VIDEO_DIRNAME = 'ZihoCut'
 const EXPORT_DIRNAME = "ZihoCutExports"
-const PYTHON_BASE_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../extra/python')
-const VIDEO_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
-if (!fs.existsSync(VIDEO_PATH)) {
-    fs.mkdirSync(VIDEO_PATH);
+
+const ASSETS_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../assets')
+const PYTHON_BASE_PATH = path.join(ASSETS_PATH, 'python')
+const EXECUTABLE_PATH = path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe')
+
+export let DOWNLOAD_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
+export let EXPORT_PATH = path.join(app.getPath('documents'), EXPORT_DIRNAME)
+
+export const CONFIG_FILE_PATH = path.join(ASSETS_PATH, '../config.txt')
+if (!fs.existsSync(CONFIG_FILE_PATH)) {
+    fs.writeFileSync(CONFIG_FILE_PATH, `DOWNLOAD_PATH=${DOWNLOAD_PATH}\nEXPORT_PATH=${EXPORT_PATH}`)
 }
-const EXPORT_PATH = path.join(app.getPath('documents'), EXPORT_DIRNAME)
-if (!fs.existsSync(EXPORT_PATH)) {
-    fs.mkdirSync(EXPORT_PATH)
+
+export function loadPath() {
+    fs.readFileSync(CONFIG_FILE_PATH, { encoding: 'utf8', flag: 'r' }).split('\n').forEach((line) => {
+        const [key, value] = line.split('=')
+        if (key === 'DOWNLOAD_PATH') {
+            DOWNLOAD_PATH = value
+        } else if (key === 'EXPORT_PATH') {
+            EXPORT_PATH = value
+        } else return
+        if (!fs.existsSync(value)) {
+            fs.mkdirSync(value)
+        }
+    })
 }
+
+loadPath()
 
 function getId(URL: string): string | null {
     if (!URL.startsWith('https://') && !URL.startsWith('http://'))
@@ -72,7 +92,7 @@ function createWindow() {
     })
 }
 
-ipcMain.handle('GET_VIDEO_PATH', () => VIDEO_PATH)
+ipcMain.handle('GET_VIDEO_PATH', () => DOWNLOAD_PATH)
 ipcMain.handle('GET_ID_FROM_URL', (event, url: string) => getId(url))
 ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
     const sendCompleteMessage = (code: number | null) => {
@@ -82,8 +102,8 @@ ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
     console.log(`Downloading video: ${id}`)
 
     const python = spawn(
-        path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
-        [path.join(PYTHON_BASE_PATH, 'download.py'), `https://www.youtube.com/watch?v=${id}`, VIDEO_PATH]
+        EXECUTABLE_PATH,
+        [path.join(PYTHON_BASE_PATH, 'download.py'), `https://www.youtube.com/watch?v=${id}`, DOWNLOAD_PATH]
     )
 
     python.on('close', (code) => {
@@ -113,11 +133,11 @@ ipcMain.handle('EXPORT_VIDEO', (event, id: string, intervals: number[][]) => {
     }
     console.log(`Exporting video: ${id}`)
     spawn(
-        path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe'),
+        EXECUTABLE_PATH,
         [
             path.join(PYTHON_BASE_PATH, 'export.py'),
             id,
-            VIDEO_PATH,
+            DOWNLOAD_PATH,
             EXPORT_PATH,
             ...intervals.map((interval) => `${interval[0]}-${interval[1]}`)
         ]
@@ -134,6 +154,10 @@ app.on('ready', () => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+    if (window !== null) {
+        const menu = Menu.buildFromTemplate(template(window))
+        Menu.setApplicationMenu(menu)
+    }
 })
 
 app.on('window-all-closed', () => {

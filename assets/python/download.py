@@ -11,4 +11,3 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     info_dict = ydl.extract_info(url, download=True)
     video_title = info_dict.get('title', None)
     print(f'VIDEO_TITLE={video_title}')
-    # ydl.download([url])

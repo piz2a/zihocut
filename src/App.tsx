@@ -122,7 +122,6 @@ export default function App() {
                     setDialog(setIsPopup, setCurrentDialog, (
                         <>
                             <label>Export failed: {message.id}</label>
-
                         </>
                     ))
                     setVideoProps(
