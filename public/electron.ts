@@ -11,7 +11,7 @@ const BASE_URL = 'http://localhost:3000'
 
 let window: BrowserWindow | null
 
-const VIDEO_DIRNAME = 'ZihoCut'
+const DOWNLOAD_DIRNAME = 'ZihoCutDownloads'
 const EXPORT_DIRNAME = "ZihoCutExports"
 
 const ASSETS_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../assets')
@@ -31,7 +31,7 @@ switch (process.platform) {
         throw new Error("Cannot find executable python path")
 }
 
-export let DOWNLOAD_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
+export let DOWNLOAD_PATH = path.join(app.getPath('documents'), DOWNLOAD_DIRNAME)
 export let EXPORT_PATH = path.join(app.getPath('documents'), EXPORT_DIRNAME)
 
 export const CONFIG_FILE_PATH = path.join(app.getPath('userData'), 'config.txt')
