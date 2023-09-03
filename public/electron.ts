@@ -16,7 +16,20 @@ const EXPORT_DIRNAME = "ZihoCutExports"
 
 const ASSETS_PATH = path.join(isDev ? __dirname : process.resourcesPath, '../assets')
 const PYTHON_BASE_PATH = path.join(ASSETS_PATH, 'python')
-const EXECUTABLE_PATH = path.join(PYTHON_BASE_PATH, 'python-embed', 'python-3.11.4-embed-amd64/python.exe')
+let EXECUTABLE_PATH: string;
+switch (process.platform) {
+    case 'win32':
+        EXECUTABLE_PATH = path.join(PYTHON_BASE_PATH, 'win32', 'python-3.11.4-embed-amd64/python.exe')
+        break
+    case 'darwin':
+        EXECUTABLE_PATH = path.join(PYTHON_BASE_PATH, 'darwin', 'writevideo')
+        break
+    case 'linux':
+        EXECUTABLE_PATH = path.join(PYTHON_BASE_PATH, 'linux', 'writevideo')
+        break
+    default:
+        throw new Error("Cannot find executable python path")
+}
 
 export let DOWNLOAD_PATH = path.join(app.getPath('documents'), VIDEO_DIRNAME)
 export let EXPORT_PATH = path.join(app.getPath('documents'), EXPORT_DIRNAME)
@@ -103,7 +116,12 @@ ipcMain.handle('QUEUE_VIDEO', (event, id: string) => {
 
     const python = spawn(
         EXECUTABLE_PATH,
-        [path.join(PYTHON_BASE_PATH, 'download.py'), `https://www.youtube.com/watch?v=${id}`, DOWNLOAD_PATH]
+        [
+            ...(process.platform === 'win32' ? [path.join(PYTHON_BASE_PATH, 'win32', 'writevideo.py')] : []),
+            'download',
+            `https://www.youtube.com/watch?v=${id}`,
+            DOWNLOAD_PATH
+        ]
     )
 
     python.on('close', (code) => {
@@ -135,7 +153,8 @@ ipcMain.handle('EXPORT_VIDEO', (event, id: string, intervals: number[][]) => {
     spawn(
         EXECUTABLE_PATH,
         [
-            path.join(PYTHON_BASE_PATH, 'export.py'),
+            ...(process.platform === 'win32' ? [path.join(PYTHON_BASE_PATH, 'win32', 'writevideo.py')] : []),
+            'export',
             id,
             DOWNLOAD_PATH,
             EXPORT_PATH,
