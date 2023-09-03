@@ -47,7 +47,8 @@
     },
     "mac": {
       "target": [
-        "default"
+        "dmg",
+        "pkg"
       ],
       "icon": "./build/icon.png"
     },
