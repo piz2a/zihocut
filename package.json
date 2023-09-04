@@ -29,7 +29,7 @@
   "main": "./public/electron.js",
   "homepage": "./",
   "keywords": [],
-  "author": "piz2a",
+  "author": "piz2a <i@piz2a.me>",
   "license": "MIT",
   "build": {
     "productName": "zihocut",
