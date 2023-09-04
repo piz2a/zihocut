@@ -29,14 +29,14 @@ Made with React & Electron.
 ### How to build the project
 Download assets.zip [in releases](https://github.com/piz2a/zihocut/releases) and unzip it in the project directory.
 - For Windows:
-  1. Delete directory "(Project directory)/assets/python/darwin".
+  1. Delete directory ```(Project directory)/assets/python/darwin```.
   2. Run the following command in the project directory:
 ```sh
 npm i
 npm run build:win
 ```
 - For macOS:
-  1. Delete directory "(Project directory)/assets/python/win32".
+  1. Delete directory ```(Project directory)/assets/python/win32```.
   2. Run the following command in the project directory:
 ```sh
 npm i
