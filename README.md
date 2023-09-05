@@ -1,6 +1,9 @@
 # ZihoCut
 Drag-and-drop YouTube links and cut the videos instantly!<br>
-[Download for Windows/Mac](https://github.com/piz2a/zihocut/releases)
+[Download (Windows / Mac)](https://github.com/piz2a/zihocut/releases)
+
+- [Manual](#manual)
+- [For Developers](#for-developers)
 
 ## Manual
 <img src="https://github.com/piz2a/zihocut/assets/43025513/3294c5d3-bbaf-4ff6-b443-6bb15f1907f5" width="500px">
