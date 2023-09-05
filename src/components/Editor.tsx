@@ -1,6 +1,6 @@
 import ReactPlayer from "react-player"
-import React, {JSX, useEffect, useRef, useState} from "react"
-import {setVideoProps, Video, videoStatus} from "../Interfaces";
+import React, {useEffect, useRef, useState} from "react"
+import {MainComponentProps, setVideoProps, Video, videoStatus} from "../Interfaces";
 import Slider from "./Slider";
 import IntervalWrapper from "./IntervalWrapper";
 import {EnterButton, setDialog} from "./Dialog";
@@ -19,14 +19,7 @@ function createInterval(
     setVideoProps('currentInterval', videoIndex, NEW_INTERVAL, videoList, setVideoList)
 }
 
-function exportVideo(
-    videoList: Video[],
-    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
-    videoIndex: number,
-    setVideoIndex: React.Dispatch<React.SetStateAction<number>>,
-    setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
-    setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
-) {
+function exportVideo( { videoList, setVideoList, videoIndex, setIsPopup, setCurrentDialog }: MainComponentProps) {
     if (videoList[videoIndex].currentInterval !== NO_INTERVAL_SELECTED) {
         setDialog(setIsPopup, setCurrentDialog, (
             <>
@@ -50,14 +43,7 @@ function exportVideo(
     setVideoProps("status", videoIndex, videoStatus.EXPORTING, videoList, setVideoList)
 }
 
-export default function Editor(props: {
-    videoList: Video[],
-    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
-    videoIndex: number,
-    setVideoIndex: React.Dispatch<React.SetStateAction<number>>,
-    setIsPopup: React.Dispatch<React.SetStateAction<boolean>>,
-    setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
-}) {
+export default function Editor(props: MainComponentProps) {
     const playerRef = useRef(null)
     const [playing, setPlaying] = useState(false)
     const [currentTime, setCurrentTime] = useState(0)
@@ -93,9 +79,7 @@ export default function Editor(props: {
                                  onProgress={(progress) => setCurrentTime(progress.playedSeconds)}/>
                 </div>
                 <div className="vr"></div>
-                <IntervalWrapper videoList={props.videoList}
-                                 setVideoList={props.setVideoList}
-                                 videoIndex={props.videoIndex}/>
+                <IntervalWrapper {...props}/>
             </div>
             <hr/>
             <div className="footer">
@@ -116,17 +100,14 @@ export default function Editor(props: {
                                     currentTime={currentTime}
                                     playing={playing}
                                     setPlaying={setPlaying}
-                                    videoList={props.videoList}
-                                    setVideoList={props.setVideoList}
-                                    videoIndex={props.videoIndex}
-                                    setVideoIndex={props.setVideoIndex}/>
+                                    {...props}/>
                         </>
                     }
                 </div>
                 <div className="bottomButtonWrapper prevent-select">
                     <button className={
                         `exportButton customButton ${props.videoList[props.videoIndex].currentInterval === NO_INTERVAL_SELECTED ? 'enabledButton' : ''}`
-                    } onClick={() => exportVideo(props.videoList, props.setVideoList, props.videoIndex, props.setVideoIndex, props.setIsPopup, props.setCurrentDialog)}>
+                    } onClick={() => exportVideo(props)}>
                         Export
                     </button>
                 </div>

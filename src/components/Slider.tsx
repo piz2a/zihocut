@@ -1,7 +1,7 @@
 import '../styles/Slider.scss'
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import {setVideoProps, Video} from "../Interfaces";
+import {MainComponentProps, setVideoProps, Video} from "../Interfaces";
 import {NEW_INTERVAL, NO_INTERVAL_SELECTED} from "./Editor";
 import {minAndSec} from "./IntervalWrapper";
 
@@ -94,17 +94,15 @@ const SliderFillTrack = styled.div.attrs((props) => ({
   z-index: 11;
 `;
 
-export default function Slider(props: {
-    playerRef: React.MutableRefObject<null>,
-    max: number,
-    currentTime: number,
-    playing: boolean,
+interface SliderProps extends MainComponentProps {
+    playerRef: React.MutableRefObject<null>
+    max: number
+    currentTime: number
+    playing: boolean
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>
-    videoList: Video[],
-    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>,
-    videoIndex: number,
-    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
-}) {
+}
+
+export default function Slider(props: SliderProps) {
     const maxWidth = 760
 
     const [init1, init2] = props.videoList[props.videoIndex].currentInterval === -1 ?

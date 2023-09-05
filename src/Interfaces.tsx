@@ -1,4 +1,4 @@
-import React from "react"
+import React, {JSX} from "react"
 
 export interface Interval {
     from: number
@@ -41,4 +41,17 @@ export const videoStatus = {
     DOWNLOAD_FAILED: 2,
     EXPORTING: 3,
     EXPORT_COMPLETE: 4
+}
+
+export interface MainComponentProps {
+    videoList: Video[]
+    setVideoList: React.Dispatch<React.SetStateAction<Video[]>>
+    videoIndex: number
+    setVideoIndex: React.Dispatch<React.SetStateAction<number>>
+    setIsPopup: React.Dispatch<React.SetStateAction<boolean>>
+    setCurrentDialog: React.Dispatch<React.SetStateAction<JSX.Element>>
+}
+
+export interface IndexComponentProps extends MainComponentProps {
+    index: number
 }
